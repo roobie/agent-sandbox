@@ -61,9 +61,12 @@ Users can override with `--build-arg BASE_IMAGE=...` for local dev or different 
 
 ### Multi-arch Support
 
-**Decision**: Defer to later
+**Decision**: Build for both amd64 and arm64
 
-Start with linux/amd64 only. Add linux/arm64 when needed (Apple Silicon runs amd64 via Rosetta in Docker).
+- Use QEMU emulation in GitHub Actions for cross-platform builds
+- Publish manifest list that includes both architectures
+- Docker automatically pulls the correct architecture for the host
+- Native arm64 for Apple Silicon (no Rosetta emulation needed)
 
 ## Tasks
 
