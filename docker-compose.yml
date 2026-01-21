@@ -17,6 +17,12 @@ services:
       - claude-state:/home/dev/.claude
       # Persist shell history
       - command-history:/commandhistory
+      # Persist .cache files (mise)
+      - local-cache:/home/dev/.cache
+      # Persist .local files (mise)
+      - local-local:/home/dev/.local
+      # Persist .config files (mise)
+      - local-config:/home/dev/.config
       # Host Claude config (optional - comment out if not needed)
       # - ${HOME}/.claude/CLAUDE.md:/home/dev/.claude/CLAUDE.md:ro
       # - ${HOME}/.claude/settings.json:/home/dev/.claude/settings.json:ro
@@ -31,3 +37,6 @@ services:
 volumes:
   claude-state:
   command-history:
+  local-cache:
+  local-local:
+  local-config:
