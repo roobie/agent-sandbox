@@ -2,6 +2,6 @@
 default:
   just --list
 
-build:
+build image:
   # cd images && sh build.sh
-  mise exec -- python ./images/build.py
+  mise exec -- python ./images/build.py {{image}}

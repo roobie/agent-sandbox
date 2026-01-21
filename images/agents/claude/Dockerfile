@@ -41,3 +41,6 @@ RUN mise exec -- \
     claude mcp add serena -- uvx --from git+https://github.com/oraios/serena serena start-mcp-server --context claude-code --project "$(pwd)"
 
 EXPOSE 24282
+
+# Entrypoint runs as root to adjust uid/gid, then drops to dev user
+USER root

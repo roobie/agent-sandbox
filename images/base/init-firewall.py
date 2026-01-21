@@ -27,10 +27,13 @@ VERIFY_GITHUB_URL = "https://api.github.com/zen"
 
 class FirewallError(Exception):
     """Custom exception for firewall configuration errors."""
+
     pass
 
 
-def run_cmd(args: List[str], check: bool = True, capture: bool = False) -> Optional[str]:
+def run_cmd(
+    args: List[str], check: bool = True, capture: bool = False
+) -> Optional[str]:
     """Execute a command with error handling."""
     result = subprocess.run(args, capture_output=True, text=True)
     if check and result.returncode != 0:
@@ -140,7 +143,23 @@ def setup_foundation_rules() -> None:
     # Allow outbound SSH
     run_cmd(["iptables", "-A", "OUTPUT", "-p", "tcp", "--dport", "22", "-j", "ACCEPT"])
     # Allow inbound SSH responses
-    run_cmd(["iptables", "-A", "INPUT", "-p", "tcp", "--sport", "22", "-m", "state", "--state", "ESTABLISHED", "-j", "ACCEPT"])
+    run_cmd(
+        [
+            "iptables",
+            "-A",
+            "INPUT",
+            "-p",
+            "tcp",
+            "--sport",
+            "22",
+            "-m",
+            "state",
+            "--state",
+            "ESTABLISHED",
+            "-j",
+            "ACCEPT",
+        ]
+    )
     # Allow localhost
     run_cmd(["iptables", "-A", "INPUT", "-i", "lo", "-j", "ACCEPT"])
     run_cmd(["iptables", "-A", "OUTPUT", "-o", "lo", "-j", "ACCEPT"])
@@ -157,8 +176,7 @@ def fetch_github_ips() -> List[str]:
 
     try:
         req = urllib.request.Request(
-            GITHUB_META_URL,
-            headers={"User-Agent": "agent-sandbox-firewall/1.0"}
+            GITHUB_META_URL, headers={"User-Agent": "agent-sandbox-firewall/1.0"}
         )
         with urllib.request.urlopen(req, timeout=30) as response:
             data = json.loads(response.read().decode())
@@ -275,14 +293,61 @@ def apply_firewall_rules() -> None:
     run_cmd(["iptables", "-P", "OUTPUT", "DROP"])
 
     # Allow established connections
-    run_cmd(["iptables", "-A", "INPUT", "-m", "state", "--state", "ESTABLISHED,RELATED", "-j", "ACCEPT"])
-    run_cmd(["iptables", "-A", "OUTPUT", "-m", "state", "--state", "ESTABLISHED,RELATED", "-j", "ACCEPT"])
+    run_cmd(
+        [
+            "iptables",
+            "-A",
+            "INPUT",
+            "-m",
+            "state",
+            "--state",
+            "ESTABLISHED,RELATED",
+            "-j",
+            "ACCEPT",
+        ]
+    )
+    run_cmd(
+        [
+            "iptables",
+            "-A",
+            "OUTPUT",
+            "-m",
+            "state",
+            "--state",
+            "ESTABLISHED,RELATED",
+            "-j",
+            "ACCEPT",
+        ]
+    )
 
     # Allow traffic to allowed domains ipset
-    run_cmd(["iptables", "-A", "OUTPUT", "-m", "set", "--match-set", IPSET_NAME, "dst", "-j", "ACCEPT"])
+    run_cmd(
+        [
+            "iptables",
+            "-A",
+            "OUTPUT",
+            "-m",
+            "set",
+            "--match-set",
+            IPSET_NAME,
+            "dst",
+            "-j",
+            "ACCEPT",
+        ]
+    )
 
     # Reject all other outbound traffic
-    run_cmd(["iptables", "-A", "OUTPUT", "-j", "REJECT", "--reject-with", "icmp-admin-prohibited"])
+    run_cmd(
+        [
+            "iptables",
+            "-A",
+            "OUTPUT",
+            "-j",
+            "REJECT",
+            "--reject-with",
+            "icmp-admin-prohibited",
+        ]
+    )
 
     print("Firewall configuration complete")
 
@@ -294,8 +359,12 @@ def verify_firewall(policy: dict) -> None:
     # Test blocked destination
     result = run_cmd_unchecked(["curl", "--connect-timeout", "5", VERIFY_BLOCKED_URL])
     if result.returncode == 0:
-        raise FirewallError(f"Firewall verification failed - was able to reach {VERIFY_BLOCKED_URL}")
-    print("Firewall verification passed - unable to reach https://example.com as expected")
+        raise FirewallError(
+            f"Firewall verification failed - was able to reach {VERIFY_BLOCKED_URL}"
+        )
+    print(
+        "Firewall verification passed - unable to reach https://example.com as expected"
+    )
 
     # Determine verification endpoint
     verify_url = None
@@ -313,12 +382,18 @@ def verify_firewall(policy: dict) -> None:
 
     # Test allowed destination
     if verify_url:
-        result = run_cmd_unchecked(["curl", "--connect-timeout", "5", "-m", "10", verify_url])
+        result = run_cmd_unchecked(
+            ["curl", "--connect-timeout", "5", "-m", "10", verify_url]
+        )
         if result.returncode != 0:
-            raise FirewallError(f"Firewall verification failed - unable to reach {verify_name}")
+            raise FirewallError(
+                f"Firewall verification failed - unable to reach {verify_name}"
+            )
         print(f"Firewall verification passed - able to reach {verify_name}")
     else:
-        print("WARNING: No services or domains in policy to verify positive connectivity")
+        print(
+            "WARNING: No services or domains in policy to verify positive connectivity"
+        )
 
 
 def main() -> int:
