@@ -4,8 +4,8 @@ set -e
 
 # entrypoint.sh must be run as root, in order to mangle the dev user's UID and GID to match host user's.
 
-# This script is both the container's entrypoint, but also the `dev-shell` handle
-# so this script must take that into account.
+# This script is both the container's entrypoint, but also symlinked as the `dev-shell` handle
+# so this script must take that into account, i.e. stateful operations must be guarded by checks to see if they're already performed.
 
 # Initialize firewall if not already done
 # Check if allowed-domains ipset exists (created by init-firewall.py)
