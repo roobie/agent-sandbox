@@ -3,12 +3,13 @@ FROM debian:bookworm
 ARG TZ
 ENV TZ="$TZ"
 
-# Install basic development tools, firewall dependencies, and yq for policy parsing
-RUN apt-get update && apt-get install -y --no-install-recommends \
+# Install basic development tools, firewall dependencies
+RUN apt-get update && \
+  apt-get install -y --no-install-recommends \
   less \
   git \
   procps \
-  sudo \
+  gosu \
   fzf \
   zsh \
   man-db \
@@ -21,18 +22,12 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   dnsutils \
   aggregate \
   jq \
-  nano \
-  vim \
+  python3 \
+  neovim \
   curl \
   wget \
   ca-certificates \
   && apt-get clean && rm -rf /var/lib/apt/lists/*
-
-# Install yq for YAML parsing
-ARG YQ_VERSION=v4.44.1
-RUN ARCH=$(dpkg --print-architecture) && \
-  wget -qO /usr/local/bin/yq "https://github.com/mikefarah/yq/releases/download/${YQ_VERSION}/yq_linux_${ARCH}" && \
-  chmod +x /usr/local/bin/yq
 
 # Set up non-root user
 ARG USERNAME=dev
@@ -63,8 +58,14 @@ USER ${USERNAME}
 
 # Set default shell and editor
 ENV SHELL=/bin/zsh
-ENV EDITOR=vim
-ENV VISUAL=vim
+ENV EDITOR=nvim
+ENV VISUAL=nvim
+
+# mise specific https://mise.jdx.dev/directories.html#config-mise
+ENV MISE_CONFIG_DIR=/home/dev/.mise/config
+ENV MISE_CACHE_DIR=/home/dev/.mise/cache
+ENV MISE_STATE_DIR=/home/dev/.mise/state
+ENV MISE_DATA_DIR=/home/dev/.mise/data
 
 # Install zsh with powerline10k theme
 ARG ZSH_IN_DOCKER_VERSION=1.2.0
@@ -77,18 +78,21 @@ RUN sh -c "$(wget -O- https://github.com/deluan/zsh-in-docker/releases/download/
   -x
 
 # Copy default network policy and firewall script
-COPY policy.yaml /etc/agent-sandbox/policy.yaml
-COPY init-firewall.sh /usr/local/bin/
+COPY policy.json /etc/agent-sandbox/policy.json
+COPY init-firewall.py /usr/local/bin/
+
 USER root
-RUN chmod 644 /etc/agent-sandbox/policy.yaml && \
-  chmod +x /usr/local/bin/init-firewall.sh && \
-  echo "${USERNAME} ALL=(root) NOPASSWD: /usr/local/bin/init-firewall.sh" > /etc/sudoers.d/firewall && \
-  chmod 0440 /etc/sudoers.d/firewall
+
+RUN chmod 644 /etc/agent-sandbox/policy.json && \
+  chmod +x /usr/local/bin/init-firewall.py
 
 # Copy and set up entrypoint
 COPY entrypoint.sh /usr/local/bin/
 RUN chmod +x /usr/local/bin/entrypoint.sh
-USER ${USERNAME}
 
+# Copy and set up dev-shell handle, i.e. `docker compose exec agent-sandbox dev-shell`
+RUN ln -s /usr/local/bin/entrypoint.sh /usr/local/bin/dev-shell
+
+# Entrypoint runs as root to adjust uid/gid, then drops to dev user
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
 CMD ["zsh"]

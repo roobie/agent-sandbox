@@ -1,13 +1,15 @@
 # Docker Compose for agent-sandbox
-# Requires: ./images/build.sh first
+# Requires: ./images/build.py first
 
 services:
-  agent:
+  agent-sandbox:
     image: agent-sandbox-claude:local
     container_name: agent-sandbox
     cap_add:
       - NET_ADMIN
       - NET_RAW
+    # ports:
+      # - 24282:24282 # Serena
     volumes:
       # Your project workspace
       - .:/workspace
@@ -15,9 +17,11 @@ services:
       - claude-state:/home/dev/.claude
       # Persist shell history
       - command-history:/commandhistory
+      # Persist .cache files (mise)
+      - mise-state:/home/dev/.mise
       # Host Claude config (optional - comment out if not needed)
-      - ${HOME}/.claude/CLAUDE.md:/home/dev/.claude/CLAUDE.md:ro
-      - ${HOME}/.claude/settings.json:/home/dev/.claude/settings.json:ro
+      # - ${HOME}/.claude/CLAUDE.md:/home/dev/.claude/CLAUDE.md:ro
+      # - ${HOME}/.claude/settings.json:/home/dev/.claude/settings.json:ro
     working_dir: /workspace
     stdin_open: true
     tty: true
@@ -29,3 +33,4 @@ services:
 volumes:
   claude-state:
   command-history:
+  mise-state:
