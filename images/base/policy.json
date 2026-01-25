@@ -1,4 +1,7 @@
 {
   "services": ["github"],
-  "domains": []
+  "domains": [
+      "github.com",
+      "github.com"
+  ]
 }

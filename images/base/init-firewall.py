@@ -229,7 +229,16 @@ def resolve_domain(domain: str) -> List[str]:
 
 def add_to_ipset(ip_or_cidr: str) -> None:
     """Add IP or CIDR to the allowed-domains ipset."""
-    run_cmd(["ipset", "add", IPSET_NAME, ip_or_cidr])
+    try:
+        run_cmd(["ipset", "add", IPSET_NAME, ip_or_cidr])
+    except FirewallError as e:
+        # ipset usually says "it's already added"
+        msg = f"{e}".lower()
+        if "already" in msg and "added" in msg:
+            # silently ignore duplicates
+            return
+        # re-raise anything else
+        raise
 
 
 def process_services(services: List[str]) -> None:
