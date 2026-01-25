@@ -8,6 +8,7 @@ RUN apt-get update && \
   apt-get install -y --no-install-recommends \
   less \
   git \
+  file \
   procps \
   gosu \
   fzf \
@@ -16,6 +17,17 @@ RUN apt-get update && \
   unzip \
   gnupg2 \
   gh \
+  strace \
+  lsof \
+  ripgrep \
+  iputils-ping \
+  iputils-tracepath \
+  gzip \
+  cmake \
+  pkg-config \
+  gdb \
+  valgrind \
+  shellcheck \
   iptables \
   ipset \
   iproute2 \
@@ -27,6 +39,7 @@ RUN apt-get update && \
   curl \
   wget \
   ca-certificates \
+  build-essential \
   && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Set up non-root user
