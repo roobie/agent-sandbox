@@ -38,6 +38,7 @@ RUN apt-get update && \
   neovim \
   curl \
   wget \
+  tmux \
   ca-certificates \
   build-essential \
   && apt-get clean && rm -rf /var/lib/apt/lists/*
