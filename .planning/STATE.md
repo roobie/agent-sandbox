@@ -2,16 +2,14 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: planning
-stopped_at: Phase 1 context gathered
-last_updated: "2026-03-23T23:33:23.486Z"
-last_activity: 2026-03-24 — Roadmap created
+status: unknown
+stopped_at: Completed 01-proxy-infrastructure-02-PLAN.md
+last_updated: "2026-03-23T23:52:10.164Z"
 progress:
   total_phases: 4
   completed_phases: 0
-  total_plans: 0
-  completed_plans: 0
-  percent: 0
+  total_plans: 4
+  completed_plans: 1
 ---
 
 # Project State
@@ -21,16 +19,12 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-24)
 
 **Core value:** Agents can fetch anything they need from the web but cannot exfiltrate data to unauthorized destinations — enforced at the network layer, not by trusting the agent.
-**Current focus:** Phase 1 — Proxy Infrastructure
+**Current focus:** Phase 01 — proxy-infrastructure
 
 ## Current Position
 
-Phase: 1 of 4 (Proxy Infrastructure)
-Plan: 0 of TBD in current phase
-Status: Ready to plan
-Last activity: 2026-03-24 — Roadmap created
-
-Progress: [░░░░░░░░░░] 0%
+Phase: 01 (proxy-infrastructure) — EXECUTING
+Plan: 1 of 4
 
 ## Performance Metrics
 
@@ -52,6 +46,7 @@ Progress: [░░░░░░░░░░] 0%
 - Trend: —
 
 *Updated after each plan completion*
+| Phase 01-proxy-infrastructure P02 | 5 | 2 tasks | 2 files |
 
 ## Accumulated Context
 
@@ -63,6 +58,9 @@ Recent decisions affecting current work:
 - [Pre-phase]: Squid proxy over iptables — centralized control, no NET_ADMIN per sandbox, hostname-based ACL stays current on CDNs
 - [Pre-phase]: Shared proxy (not sidecar) — one proxy for N sandboxes, one ACL config
 - [Pre-phase]: mise for both runtime management (inside container) and lifecycle orchestration (host)
+- [Phase 01-proxy-infrastructure]: Kept iproute2 and dnsutils in base Dockerfile for debugging and DNS proxy verification
+- [Phase 01-proxy-infrastructure]: USER root restored before entrypoint COPY after firewall block removal exposed missing context dependency
+- [Phase 01-proxy-infrastructure]: init-firewall.py and policy.json retained on disk pending Plan 04 smoke test confirmation before physical deletion
 
 ### Pending Todos
 
@@ -76,6 +74,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-23T23:33:23.484Z
-Stopped at: Phase 1 context gathered
-Resume file: .planning/phases/01-proxy-infrastructure/01-CONTEXT.md
+Last session: 2026-03-23T23:52:10.163Z
+Stopped at: Completed 01-proxy-infrastructure-02-PLAN.md
+Resume file: None

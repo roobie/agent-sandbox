@@ -55,8 +55,8 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Migration
 
-- [ ] **MIG-01**: Existing init-firewall.py and iptables approach completely removed (not left dormant)
-- [ ] **MIG-02**: NET_ADMIN and NET_RAW capabilities removed from sandbox containers
+- [x] **MIG-01**: Existing init-firewall.py and iptables approach completely removed (not left dormant)
+- [x] **MIG-02**: NET_ADMIN and NET_RAW capabilities removed from sandbox containers
 
 ## v2 Requirements
 
@@ -104,8 +104,8 @@ Which phases cover which requirements. Updated during roadmap creation.
 | PROXY-05 | Phase 1 | Pending |
 | PROXY-06 | Phase 1 | Pending |
 | PROXY-07 | Phase 1 | Pending |
-| MIG-01 | Phase 1 | Pending |
-| MIG-02 | Phase 1 | Pending |
+| MIG-01 | Phase 1 | Complete |
+| MIG-02 | Phase 1 | Complete |
 | HARD-01 | Phase 2 | Pending |
 | HARD-02 | Phase 2 | Pending |
 | HARD-03 | Phase 2 | Pending |
