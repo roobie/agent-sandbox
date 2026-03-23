@@ -1,0 +1,19 @@
+# GitHub — covers github.com and all subdomains
+# (replaces policy.json "services: github" which resolved IPs via GitHub /meta API)
+.github.com
+.githubusercontent.com
+
+# Anthropic / Claude Code
+.api.anthropic.com
+.statsig.anthropic.com
+.statsig.com
+
+# Error tracking
+.sentry.io
+
+# Package registries
+.pypi.org
+.files.pythonhosted.org
+
+# mise version resolution
+.mise-versions.jdx.dev
