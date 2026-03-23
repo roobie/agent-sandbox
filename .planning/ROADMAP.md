@@ -29,7 +29,13 @@ Decimal phases appear between their surrounding integers in numeric order.
   3. A sandbox container can successfully reach a domain on the allowlist (e.g., `curl https://github.com` works, `curl https://example-blocked.com` fails with a Squid error)
   4. Two sandbox containers started simultaneously both route through the same Squid proxy and appear in the same access log
   5. `init-firewall.py` is absent from all image layers; sandbox containers carry no NET_ADMIN or NET_RAW capabilities
-**Plans**: TBD
+**Plans**: 4 plans
+
+Plans:
+- [ ] 01-01-PLAN.md — Proxy container image (Dockerfile, squid.conf, allowlist.txt)
+- [ ] 01-02-PLAN.md — Base image migration (remove firewall packages and entrypoint block)
+- [ ] 01-03-PLAN.md — Compose orchestration and build tooling (docker-compose.yml, build.py)
+- [ ] 01-04-PLAN.md — Smoke test suite and old file deletion
 
 ### Phase 2: Container Hardening
 **Goal**: Sandbox containers run with minimal privileges — read-only filesystem, all capabilities dropped, default seccomp profile, and configurable resource limits.
@@ -71,7 +77,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Proxy Infrastructure | 0/TBD | Not started | - |
+| 1. Proxy Infrastructure | 0/4 | Planned | - |
 | 2. Container Hardening | 0/TBD | Not started | - |
 | 3. Development Environment | 0/TBD | Not started | - |
 | 4. Observability and Distribution | 0/TBD | Not started | - |
