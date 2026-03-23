@@ -1,15 +1,35 @@
 # Docker Compose for agent-sandbox
-# Requires: ./images/build.py first
+# Requires: python3 images/build.py proxy && python3 images/build.py all
 
 services:
+  proxy:
+    image: agent-sandbox-proxy:local
+    container_name: agent-sandbox-proxy
+    networks:
+      - sandbox-internal
+      - sandbox-external
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "squid -k check && curl -sf --max-time 3 -x http://localhost:3128 http://mise-versions.jdx.dev"]
+      interval: 5s
+      timeout: 3s
+      retries: 3
+      start_period: 10s
+    volumes:
+      # Host-mount overrides the baked-in allowlist — edit config/allowlist.txt to add domains
+      # without rebuilding the proxy image. Comment out to use the baked-in default.
+      - ./config/allowlist.txt:/etc/squid/allowlist.txt:ro
+    # Do NOT add ports: here — port 3128 is only accessible within Docker networks
+
   agent-sandbox:
     image: agent-sandbox-claude:local
     container_name: agent-sandbox
-    cap_add:
-      - NET_ADMIN
-      - NET_RAW
-    # ports:
-      # - 24282:24282 # Serena
+    networks:
+      - sandbox-internal
+    depends_on:
+      proxy:
+        condition: service_healthy
+    # cap_add REMOVED — no NET_ADMIN, no NET_RAW required (proxy handles egress)
     volumes:
       # Your project workspace
       - .:/workspace
@@ -31,6 +51,22 @@ services:
       - TZ=${TZ:-America/Los_Angeles}
       - CLAUDE_CONFIG_DIR=/home/dev/.claude
       - POWERLEVEL9K_DISABLE_GITSTATUS=true
+      # Proxy routing — both uppercase and lowercase for broad tool compatibility
+      - HTTP_PROXY=http://proxy:3128
+      - HTTPS_PROXY=http://proxy:3128
+      - http_proxy=http://proxy:3128
+      - https_proxy=http://proxy:3128
+      # Exclude loopback from proxy routing
+      - NO_PROXY=localhost,127.0.0.1
+      - no_proxy=localhost,127.0.0.1
+
+networks:
+  sandbox-internal:
+    # internal: true means Docker blocks all external routing from this network
+    # Sandbox containers can only reach the internet via the proxy container
+    internal: true
+  sandbox-external:
+    driver: bridge
 
 volumes:
   claude-state:
