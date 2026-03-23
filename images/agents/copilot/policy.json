@@ -1,7 +1,0 @@
-{
-  "services": ["github"],
-  "domains": [
-    "pypi.org",
-    "mise-versions.jdx.dev"
-  ]
-}

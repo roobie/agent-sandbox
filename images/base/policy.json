@@ -1,7 +1,0 @@
-{
-  "services": ["github"],
-  "domains": [
-      "github.com",
-      "github.com"
-  ]
-}
