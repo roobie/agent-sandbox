@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: unknown
-stopped_at: Completed 01-proxy-infrastructure-02-PLAN.md
-last_updated: "2026-03-23T23:52:10.164Z"
+stopped_at: Completed 01-proxy-infrastructure 01-01-PLAN.md
+last_updated: "2026-03-23T23:52:50.845Z"
 progress:
   total_phases: 4
   completed_phases: 0
   total_plans: 4
-  completed_plans: 1
+  completed_plans: 2
 ---
 
 # Project State
@@ -47,6 +47,7 @@ Plan: 1 of 4
 
 *Updated after each plan completion*
 | Phase 01-proxy-infrastructure P02 | 5 | 2 tasks | 2 files |
+| Phase 01-proxy-infrastructure P01 | 2 | 2 tasks | 4 files |
 
 ## Accumulated Context
 
@@ -61,6 +62,9 @@ Recent decisions affecting current work:
 - [Phase 01-proxy-infrastructure]: Kept iproute2 and dnsutils in base Dockerfile for debugging and DNS proxy verification
 - [Phase 01-proxy-infrastructure]: USER root restored before entrypoint COPY after firewall block removal exposed missing context dependency
 - [Phase 01-proxy-infrastructure]: init-firewall.py and policy.json retained on disk pending Plan 04 smoke test confirmation before physical deletion
+- [Phase 01-proxy-infrastructure]: SNI peek/splice chosen over plain CONNECT tunnel to prevent hostname spoofing without TLS decryption
+- [Phase 01-proxy-infrastructure]: Leading-dot dstdomain syntax for all allowlist entries — ensures subdomain wildcard coverage for CDN hostnames
+- [Phase 01-proxy-infrastructure]: config/allowlist.txt as host-mount override source separate from image-baked images/proxy/allowlist.txt
 
 ### Pending Todos
 
@@ -74,6 +78,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-23T23:52:10.163Z
-Stopped at: Completed 01-proxy-infrastructure-02-PLAN.md
+Last session: 2026-03-23T23:52:50.843Z
+Stopped at: Completed 01-proxy-infrastructure 01-01-PLAN.md
 Resume file: None
