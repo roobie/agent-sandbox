@@ -36,6 +36,11 @@ def run_docker_build(tag: str, context: Path, build_args: dict[str, str]) -> Non
     subprocess.check_call(cmd)
 
 
+def build_proxy() -> None:
+    build_args: dict[str, str] = {}  # No build args needed for proxy image
+    run_docker_build("agent-sandbox-proxy:local", SCRIPT_DIR / "proxy", build_args)
+
+
 def build_base() -> None:
     build_args = {
         "TZ": TZ,
@@ -59,7 +64,7 @@ def build_claude() -> None:
 
 def print_usage() -> None:
     prog = Path(sys.argv[0]).name
-    usage = f"""Usage: {prog} [base|claude|all]
+    usage = f"""Usage: {prog} [proxy|base|claude|all]
 
 Environment variables:
   TZ                       Timezone (default: {TZ})
@@ -75,11 +80,14 @@ Environment variables:
 def main() -> None:
     target = sys.argv[1] if len(sys.argv) > 1 else "all"
 
-    if target == "base":
+    if target == "proxy":
+        build_proxy()
+    elif target == "base":
         build_base()
     elif target == "claude":
         build_claude()
     elif target == "all":
+        build_proxy()   # No dependency on base — can build first
         build_base()
         build_claude()
     else:
