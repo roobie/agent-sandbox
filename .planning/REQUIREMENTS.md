@@ -97,42 +97,42 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| PROXY-01 | — | Pending |
-| PROXY-02 | — | Pending |
-| PROXY-03 | — | Pending |
-| PROXY-04 | — | Pending |
-| PROXY-05 | — | Pending |
-| PROXY-06 | — | Pending |
-| PROXY-07 | — | Pending |
-| HARD-01 | — | Pending |
-| HARD-02 | — | Pending |
-| HARD-03 | — | Pending |
-| HARD-04 | — | Pending |
-| DEVENV-01 | — | Pending |
-| DEVENV-02 | — | Pending |
-| DEVENV-03 | — | Pending |
-| DEVENV-04 | — | Pending |
-| DEVENV-05 | — | Pending |
-| DEVENV-06 | — | Pending |
-| DEVENV-07 | — | Pending |
-| ORCH-01 | — | Pending |
-| ORCH-02 | — | Pending |
-| ORCH-03 | — | Pending |
-| ORCH-04 | — | Pending |
-| OBS-01 | — | Pending |
-| OBS-02 | — | Pending |
-| OBS-03 | — | Pending |
-| DIST-01 | — | Pending |
-| DIST-02 | — | Pending |
-| DIST-03 | — | Pending |
-| MIG-01 | — | Pending |
-| MIG-02 | — | Pending |
+| PROXY-01 | Phase 1 | Pending |
+| PROXY-02 | Phase 1 | Pending |
+| PROXY-03 | Phase 1 | Pending |
+| PROXY-04 | Phase 1 | Pending |
+| PROXY-05 | Phase 1 | Pending |
+| PROXY-06 | Phase 1 | Pending |
+| PROXY-07 | Phase 1 | Pending |
+| MIG-01 | Phase 1 | Pending |
+| MIG-02 | Phase 1 | Pending |
+| HARD-01 | Phase 2 | Pending |
+| HARD-02 | Phase 2 | Pending |
+| HARD-03 | Phase 2 | Pending |
+| HARD-04 | Phase 2 | Pending |
+| DEVENV-01 | Phase 3 | Pending |
+| DEVENV-02 | Phase 3 | Pending |
+| DEVENV-03 | Phase 3 | Pending |
+| DEVENV-04 | Phase 3 | Pending |
+| DEVENV-05 | Phase 3 | Pending |
+| DEVENV-06 | Phase 3 | Pending |
+| DEVENV-07 | Phase 3 | Pending |
+| ORCH-01 | Phase 3 | Pending |
+| ORCH-02 | Phase 3 | Pending |
+| ORCH-03 | Phase 3 | Pending |
+| ORCH-04 | Phase 3 | Pending |
+| OBS-01 | Phase 4 | Pending |
+| OBS-02 | Phase 4 | Pending |
+| OBS-03 | Phase 4 | Pending |
+| DIST-01 | Phase 4 | Pending |
+| DIST-02 | Phase 4 | Pending |
+| DIST-03 | Phase 4 | Pending |
 
 **Coverage:**
 - v1 requirements: 30 total
-- Mapped to phases: 0
-- Unmapped: 30 ⚠️
+- Mapped to phases: 30
+- Unmapped: 0 ✓
 
 ---
 *Requirements defined: 2026-03-24*
-*Last updated: 2026-03-24 after initial definition*
+*Last updated: 2026-03-24 after roadmap creation*
