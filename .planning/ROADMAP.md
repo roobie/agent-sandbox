@@ -12,7 +12,7 @@ Four phases that take the project from its current per-container iptables approa
 
 Decimal phases appear between their surrounding integers in numeric order.
 
-- [ ] **Phase 1: Proxy Infrastructure** - Squid proxy container with dual-network topology, domain allowlist ACL, and complete iptables migration cutover
+- [x] **Phase 1: Proxy Infrastructure** - Squid proxy container with dual-network topology, domain allowlist ACL, and complete iptables migration cutover (completed 2026-03-23)
 - [ ] **Phase 2: Container Hardening** - Read-only rootfs, capability dropping, resource limits, and seccomp baseline
 - [ ] **Phase 3: Development Environment** - Full language runtime suite via mise, per-package-manager proxy config, and mise task orchestration
 - [ ] **Phase 4: Observability and Distribution** - Filesystem diff logging, Squid access log auditing, and GHCR image publishing via CI
@@ -77,7 +77,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Proxy Infrastructure | 3/4 | In Progress|  |
+| 1. Proxy Infrastructure | 4/4 | Complete   | 2026-03-23 |
 | 2. Container Hardening | 0/TBD | Not started | - |
 | 3. Development Environment | 0/TBD | Not started | - |
 | 4. Observability and Distribution | 0/TBD | Not started | - |
