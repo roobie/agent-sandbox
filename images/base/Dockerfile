@@ -3,7 +3,7 @@ FROM debian:bookworm
 ARG TZ
 ENV TZ="$TZ"
 
-# Install basic development tools, firewall dependencies
+# Install basic development tools
 RUN apt-get update && \
   apt-get install -y --no-install-recommends \
   less \
@@ -28,11 +28,8 @@ RUN apt-get update && \
   gdb \
   valgrind \
   shellcheck \
-  iptables \
-  ipset \
   iproute2 \
   dnsutils \
-  aggregate \
   jq \
   python3 \
   neovim \
@@ -91,14 +88,7 @@ RUN sh -c "$(wget -O- https://github.com/deluan/zsh-in-docker/releases/download/
   -a "export PROMPT_COMMAND='history -a' && export HISTFILE=/commandhistory/.bash_history" \
   -x
 
-# Copy default network policy and firewall script
-COPY policy.json /etc/agent-sandbox/policy.json
-COPY init-firewall.py /usr/local/bin/
-
 USER root
-
-RUN chmod 644 /etc/agent-sandbox/policy.json && \
-  chmod +x /usr/local/bin/init-firewall.py
 
 # Copy and set up entrypoint
 COPY entrypoint.sh /usr/local/bin/
