@@ -7,23 +7,6 @@ set -e
 # This script is both the container's entrypoint, but also symlinked as the `dev-shell` handle
 # so this script must take that into account, i.e. stateful operations must be guarded by checks to see if they're already performed.
 
-# Initialize firewall if not already done
-# Check if allowed-domains ipset exists (created by init-firewall.py)
-if ! ipset list allowed-domains >/dev/null 2>&1; then
-    echo "Initializing firewall..."
-    if ! /usr/local/bin/init-firewall.py; then
-        echo ""
-        echo "=========================================="
-        echo "FATAL: Firewall initialization failed!"
-        echo "Container cannot start without working firewall."
-        echo "Check the errors above and rebuild the image."
-        echo "=========================================="
-        exit 1
-  fi
-else
-  echo "Firewall already initialized."
-fi
-
 cd /workspace
 
 # the host bind mount is
