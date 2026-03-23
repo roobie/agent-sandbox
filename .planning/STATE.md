@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: unknown
-stopped_at: Completed 01-proxy-infrastructure 01-01-PLAN.md
-last_updated: "2026-03-23T23:52:50.845Z"
+stopped_at: Completed 01-proxy-infrastructure 01-03-PLAN.md
+last_updated: "2026-03-23T23:55:05Z"
 progress:
   total_phases: 4
   completed_phases: 0
   total_plans: 4
-  completed_plans: 2
+  completed_plans: 3
 ---
 
 # Project State
@@ -24,7 +24,7 @@ See: .planning/PROJECT.md (updated 2026-03-24)
 ## Current Position
 
 Phase: 01 (proxy-infrastructure) — EXECUTING
-Plan: 1 of 4
+Plan: 3 of 4
 
 ## Performance Metrics
 
@@ -65,6 +65,8 @@ Recent decisions affecting current work:
 - [Phase 01-proxy-infrastructure]: SNI peek/splice chosen over plain CONNECT tunnel to prevent hostname spoofing without TLS decryption
 - [Phase 01-proxy-infrastructure]: Leading-dot dstdomain syntax for all allowlist entries — ensures subdomain wildcard coverage for CDN hostnames
 - [Phase 01-proxy-infrastructure]: config/allowlist.txt as host-mount override source separate from image-baked images/proxy/allowlist.txt
+- [Phase 01-03]: Health check uses mise-versions.jdx.dev (allowlisted) not example.com — Squid returns 403 for blocked domains but curl exits 0 on any valid HTTP response
+- [Phase 01-03]: Proxy comment in compose documents NET_ADMIN/NET_RAW removal; cap_add: key is fully absent
 
 ### Pending Todos
 
@@ -78,6 +80,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-23T23:52:50.843Z
-Stopped at: Completed 01-proxy-infrastructure 01-01-PLAN.md
+Last session: 2026-03-23T23:55:05Z
+Stopped at: Completed 01-proxy-infrastructure 01-03-PLAN.md
 Resume file: None

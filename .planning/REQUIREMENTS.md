@@ -12,10 +12,10 @@ Requirements for initial release. Each maps to roadmap phases.
 - [x] **PROXY-01**: Squid proxy runs as a standalone long-running container, separate from sandbox containers
 - [x] **PROXY-02**: Squid enforces domain-based egress allowlist via dstdomain ACLs loaded from a config file
 - [x] **PROXY-03**: Squid uses SNI peek/splice to verify HTTPS destination hostnames without TLS decryption (no CA cert needed)
-- [ ] **PROXY-04**: Multiple sandbox containers route through the single Squid proxy simultaneously via shared Docker network
+- [x] **PROXY-04**: Multiple sandbox containers route through the single Squid proxy simultaneously via shared Docker network
 - [x] **PROXY-05**: Sandbox containers join an internal Docker network (no direct internet); only the proxy bridges to external
-- [ ] **PROXY-06**: Sandbox containers use HTTP_PROXY/HTTPS_PROXY env vars pointing at the Squid proxy
-- [ ] **PROXY-07**: Proxy container has a health check; sandbox containers wait for proxy to be healthy before starting
+- [x] **PROXY-06**: Sandbox containers use HTTP_PROXY/HTTPS_PROXY env vars pointing at the Squid proxy
+- [x] **PROXY-07**: Proxy container has a health check; sandbox containers wait for proxy to be healthy before starting
 
 ### Container Hardening
 
@@ -100,10 +100,10 @@ Which phases cover which requirements. Updated during roadmap creation.
 | PROXY-01 | Phase 1 | Complete |
 | PROXY-02 | Phase 1 | Complete |
 | PROXY-03 | Phase 1 | Complete |
-| PROXY-04 | Phase 1 | Pending |
+| PROXY-04 | Phase 1 | Complete |
 | PROXY-05 | Phase 1 | Complete |
-| PROXY-06 | Phase 1 | Pending |
-| PROXY-07 | Phase 1 | Pending |
+| PROXY-06 | Phase 1 | Complete |
+| PROXY-07 | Phase 1 | Complete |
 | MIG-01 | Phase 1 | Complete |
 | MIG-02 | Phase 1 | Complete |
 | HARD-01 | Phase 2 | Pending |
