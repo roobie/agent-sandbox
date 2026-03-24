@@ -59,9 +59,8 @@ services:
       - npm-cache:/home/dev/.npm
       - pip-cache:/home/dev/.cache/pip
       - go-cache:/home/dev/go/pkg/mod
-      # Host Claude config (optional - comment out if not needed)
-      # - ${HOME}/.claude/CLAUDE.md:/home/dev/.claude/CLAUDE.md:ro
-      # - ${HOME}/.claude/settings.json:/home/dev/.claude/settings.json:ro
+      # Host Claude config (optional - uncomment to share host config readonly)
+      # - ${HOME}/.claude:/home/dev/.host-claude:ro
       # Writable tmpfs mounts required under read_only: true
       - type: tmpfs
         target: /tmp

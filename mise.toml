@@ -49,11 +49,22 @@ description = "Start a sandbox container instance"
 usage = '''
 flag "--name -n <name>" help="Sandbox instance name (used in container_name)" default="default"
 flag "--workspace -w <workspace>" help="Host workspace path to mount at /workspace" default="."
+flag "--claude-config -c" help="Mount host ~/.claude readonly into container at /home/dev/.host-claude"
 '''
 run = """
 NAME="${usage_name:-default}"
 WORKSPACE="${usage_workspace:-.}"
 WORKSPACE="$(realpath "$WORKSPACE")"
+
+CLAUDE_MOUNT=""
+if [ -n "${usage_claude_config:-}" ]; then
+  HOST_CLAUDE="${HOME}/.claude"
+  if [ -d "$HOST_CLAUDE" ]; then
+    CLAUDE_MOUNT="--volume ${HOST_CLAUDE}:/home/dev/.host-claude:ro"
+  else
+    echo "Warning: ${HOST_CLAUDE} not found, skipping claude config mount"
+  fi
+fi
 
 # Initialize named volumes with correct ownership (UID/GID 500 = dev user).
 # Named volumes are created root-owned by Docker. The sandbox runs without CAP_CHOWN
@@ -92,6 +103,7 @@ docker run -d -i \
   --volume "npm-cache:/home/dev/.npm" \
   --volume "pip-cache:/home/dev/.cache/pip" \
   --volume "go-cache:/home/dev/go/pkg/mod" \
+  ${CLAUDE_MOUNT} \
   --env TZ="${TZ:-America/Los_Angeles}" \
   --env CLAUDE_CONFIG_DIR=/home/dev/.claude \
   --env POWERLEVEL9K_DISABLE_GITSTATUS=true \
