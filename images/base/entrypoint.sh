@@ -53,9 +53,10 @@ fi
 HOME_DIR="/home/$APP_USER"
 
 # Fix ownership of internal (non-bind-mount) dirs that this user needs.
-# and then chown'ing the whole HOME
-chown -R "$APP_USER":"$APP_GROUP" "$HOME_DIR"
-chown -R "$APP_USER":"$APP_GROUP" "/commandhistory"
+# Under read_only: true, image-layer files in HOME_DIR are not writable — errors are expected and non-fatal.
+# Named volumes mounted under HOME_DIR (e.g. .claude, .cargo, .mise, .local/bin) are always writable.
+chown -R "$APP_USER":"$APP_GROUP" "$HOME_DIR" 2>/dev/null || true
+chown -R "$APP_USER":"$APP_GROUP" "/commandhistory" 2>/dev/null || true
 
 # Drop privileges
 exec gosu "$APP_USER" "${@:-zsh}"
