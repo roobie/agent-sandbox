@@ -27,6 +27,10 @@ Agents can fetch anything they need from the web (packages, docs, APIs) but cann
 - ✓ Build automation via Python script (images/build.py) — existing
 - ✓ Shell environment (zsh + powerlevel10k, git-delta, fzf integration) — existing
 - ✓ UID/GID adjustment to match host workspace ownership — existing
+- ✓ Read-only rootfs with writable tmpfs for /tmp and /run — Phase 2
+- ✓ cap_drop=ALL (SETUID/SETGID retained for gosu) + no-new-privileges — Phase 2
+- ✓ Default seccomp profile active — Phase 2
+- ✓ Configurable resource limits (CPU, memory, PID) via env vars — Phase 2
 
 ### Active
 
@@ -36,9 +40,6 @@ Agents can fetch anything they need from the web (packages, docs, APIs) but cann
 - [ ] LSP/editor tooling pre-installed for agent code intelligence
 - [ ] mise tasks for sandbox lifecycle orchestration (build, run, stop, proxy management)
 - [ ] Optional package cache volumes (npm, pip, cargo, go modules) persisting across runs
-- [ ] Process-level hardening: --cap-drop=ALL, --security-opt=no-new-privileges, seccomp profile
-- [ ] Resource limits: CPU, memory, PID limits configurable per sandbox
-- [ ] Read-only rootfs with writable tmpfs for /tmp
 - [ ] Published container image (Docker Hub / GHCR) in addition to local build
 - [ ] Execution timeouts for sandbox runs
 - [ ] Observability: stdout/stderr capture, filesystem diff logging
@@ -84,4 +85,4 @@ Tooling reference: `docs/mise.reference.md` — mise is used for both runtime ve
 | Evaluate existing Docker artifacts | Keep what works (base image structure, volume strategy), replace what changes (firewall → proxy) | — Pending |
 
 ---
-*Last updated: 2026-03-24 after Phase 1 completion*
+*Last updated: 2026-03-24 after Phase 2 completion*
