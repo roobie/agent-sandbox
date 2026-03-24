@@ -10,10 +10,10 @@ check() {
     shift 2
     if "$@" >/dev/null 2>&1; then
         echo "PASS [$id] $desc"
-        ((PASS++))
+        ((++PASS))
     else
         echo "FAIL [$id] $desc"
-        ((FAIL++))
+        ((++FAIL))
     fi
 }
 
@@ -23,10 +23,10 @@ check_fail() {
     shift 2
     if ! "$@" >/dev/null 2>&1; then
         echo "PASS [$id] $desc (expected failure confirmed)"
-        ((PASS++))
+        ((++PASS))
     else
         echo "FAIL [$id] $desc (should have failed but succeeded)"
-        ((FAIL++))
+        ((++FAIL))
     fi
 }
 

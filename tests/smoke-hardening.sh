@@ -10,10 +10,10 @@ check() {
     shift 2
     if "$@" >/dev/null 2>&1; then
         echo "PASS [$id] $desc"
-        ((PASS++))
+        ((++PASS))
     else
         echo "FAIL [$id] $desc"
-        ((FAIL++))
+        ((++FAIL))
     fi
 }
 
@@ -23,10 +23,10 @@ check_fail() {
     shift 2
     if ! "$@" >/dev/null 2>&1; then
         echo "PASS [$id] $desc (expected failure confirmed)"
-        ((PASS++))
+        ((++PASS))
     else
         echo "FAIL [$id] $desc (should have failed but succeeded)"
-        ((FAIL++))
+        ((++FAIL))
     fi
 }
 
@@ -49,9 +49,17 @@ check HARD-01 "/run is writable" \
 check HARD-01 "Docker inspect shows ReadonlyRootfs: true" \
     bash -c "docker inspect agent-sandbox | python3 -c \"import json,sys; c=json.load(sys.stdin); exit(0 if c[0]['HostConfig']['ReadonlyRootfs'] else 1)\""
 
-# HARD-02: cap_drop=ALL applied (CapAdd is null/empty)
-check HARD-02 "No capabilities added (CapAdd is null)" \
-    bash -c "docker inspect agent-sandbox | python3 -c \"import json,sys; c=json.load(sys.stdin); exit(0 if c[0]['HostConfig']['CapAdd'] is None else 1)\""
+# HARD-02: cap_drop=ALL applied; only SETUID/SETGID added back (needed for gosu user-switch in entrypoint)
+# No network capabilities (NET_ADMIN, NET_RAW) or privilege-escalation capabilities should be present
+check HARD-02 "No dangerous capabilities added (no NET_ADMIN, NET_RAW, SYS_ADMIN)" \
+    bash -c "docker inspect agent-sandbox | python3 -c \"
+import json,sys
+c=json.load(sys.stdin)
+caps=c[0]['HostConfig']['CapAdd'] or []
+dangerous={'NET_ADMIN','NET_RAW','SYS_ADMIN','SYS_PTRACE','SYS_MODULE','ALL'}
+bad=[cap for cap in caps if cap.upper() in dangerous]
+exit(1 if bad else 0)
+\""
 
 # HARD-02: CapDrop contains ALL
 check HARD-02 "CapDrop contains ALL" \
