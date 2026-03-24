@@ -20,6 +20,22 @@ run = "docker compose stop proxy"
 description = "Show proxy container status"
 run = "docker compose ps proxy"
 
+[tasks."proxy:logs"]
+description = "Show Squid proxy logs"
+usage = '''
+flag "--follow -f" help="Follow log output (live tail)"
+flag "--tail -n <lines>" help="Number of lines to show from end" default="100"
+'''
+run = """
+FOLLOW="${usage_follow:-}"
+TAIL="${usage_tail:-100}"
+ARGS="--tail ${TAIL}"
+if [ -n "$FOLLOW" ]; then
+  ARGS="$ARGS --follow"
+fi
+docker logs $ARGS agent-sandbox-proxy
+"""
+
 [tasks."sandbox:build"]
 description = "Build sandbox container images"
 run = "python3 images/build.py all"
@@ -90,6 +106,24 @@ docker run -d -i \
   --workdir /workspace \
   agent-sandbox-claude:local
 echo "Sandbox agent-sandbox-${NAME} started (workspace: ${WORKSPACE})"
+"""
+
+[tasks."sandbox:logs"]
+description = "Show sandbox container logs"
+usage = '''
+flag "--name -n <name>" help="Sandbox instance name" default="default"
+flag "--follow -f" help="Follow log output (live tail)"
+flag "--tail -t <lines>" help="Number of lines to show from end" default="100"
+'''
+run = """
+NAME="${usage_name:-default}"
+FOLLOW="${usage_follow:-}"
+TAIL="${usage_tail:-100}"
+ARGS="--tail ${TAIL}"
+if [ -n "$FOLLOW" ]; then
+  ARGS="$ARGS --follow"
+fi
+docker logs $ARGS "agent-sandbox-${NAME}"
 """
 
 [tasks."sandbox:stop"]
