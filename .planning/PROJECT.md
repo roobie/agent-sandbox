@@ -16,8 +16,10 @@ Agents can fetch anything they need from the web (packages, docs, APIs) but cann
 
 - ✓ Debian bookworm base image with common dev tools (git, curl, ripgrep, jq, neovim, tmux, fzf, build-essential, cmake) — existing
 - ✓ Non-root user execution (dev user, uid/gid 500) — existing
-- ✓ Network egress control via iptables/ipset with policy-as-JSON — existing
-- ✓ Firewall initialization script (init-firewall.py) with idempotent startup — existing
+- ✓ Network egress control via shared Squid proxy with domain allowlist ACL — Phase 1
+- ✓ SNI peek/splice for HTTPS hostname verification without TLS decryption — Phase 1
+- ✓ Multiple sandbox instances routing through single Squid proxy — Phase 1
+- ✓ Dual-network Docker topology (internal + external) — Phase 1
 - ✓ Agent-specific image layers (Claude, Copilot) extending base — existing
 - ✓ Volume mounting strategy (workspace bind mount, credential volumes, cache volumes) — existing
 - ✓ Docker Compose orchestration mode — existing
@@ -30,14 +32,11 @@ Agents can fetch anything they need from the web (packages, docs, APIs) but cann
 
 <!-- Current scope. Building toward these. -->
 
-- [ ] Shared Squid proxy container as central egress gateway (replaces per-container iptables approach)
-- [ ] Multiple sandbox instances routing through single Squid proxy simultaneously
-- [ ] Squid ACL-based domain whitelisting/blacklisting for egress control
 - [ ] Full language runtime suite via mise: Node, Python, Go, Rust 1.94.x, uv 0.10.x, rust-analyzer, Bun 1.3.x
 - [ ] LSP/editor tooling pre-installed for agent code intelligence
 - [ ] mise tasks for sandbox lifecycle orchestration (build, run, stop, proxy management)
 - [ ] Optional package cache volumes (npm, pip, cargo, go modules) persisting across runs
-- [ ] Process-level hardening: --cap-drop=ALL (re-add only NET_ADMIN for proxy routing), --security-opt=no-new-privileges, seccomp profile
+- [ ] Process-level hardening: --cap-drop=ALL, --security-opt=no-new-privileges, seccomp profile
 - [ ] Resource limits: CPU, memory, PID limits configurable per sandbox
 - [ ] Read-only rootfs with writable tmpfs for /tmp
 - [ ] Published container image (Docker Hub / GHCR) in addition to local build
@@ -85,4 +84,4 @@ Tooling reference: `docs/mise.reference.md` — mise is used for both runtime ve
 | Evaluate existing Docker artifacts | Keep what works (base image structure, volume strategy), replace what changes (firewall → proxy) | — Pending |
 
 ---
-*Last updated: 2026-03-24 after initialization*
+*Last updated: 2026-03-24 after Phase 1 completion*
