@@ -61,7 +61,13 @@ Plans:
   3. Package cache volumes (npm, pip, cargo, go) survive sandbox stop/start — a second `npm install` of the same package does not re-download from the internet
   4. `mise run proxy:start`, `mise run sandbox:run`, and `mise run sandbox:stop` work from the host to manage the full lifecycle
   5. Two named sandbox instances can run simultaneously against different workspaces via a single `mise run sandbox:run NAME=foo WORKSPACE=...` invocation pattern
-**Plans**: TBD
+**Plans**: 4 plans
+
+Plans:
+- [ ] 03-01-PLAN.md — Dockerfile: system-wide runtime installs + proxy config files baked into image
+- [ ] 03-02-PLAN.md — Compose: package cache volumes, proxy env vars, and expanded Squid allowlist
+- [ ] 03-03-PLAN.md — mise.toml: host lifecycle tasks (proxy, sandbox, image)
+- [ ] 03-04-PLAN.md — Integration smoke test and human verification checkpoint
 
 ### Phase 4: Observability and Distribution
 **Goal**: Sandbox activity is auditable via Docker logs and filesystem diffs; images are published to GHCR so users can pull without building locally; all existing Docker artifacts are either integrated or explicitly removed.
