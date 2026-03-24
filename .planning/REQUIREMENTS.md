@@ -19,10 +19,10 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Container Hardening
 
-- [ ] **HARD-01**: Sandbox containers run with read-only rootfs and writable tmpfs for /tmp
-- [ ] **HARD-02**: Sandbox containers run with --cap-drop=ALL and --security-opt=no-new-privileges
-- [ ] **HARD-03**: Sandbox containers use Docker's default seccomp profile (custom tuning deferred)
-- [ ] **HARD-04**: Resource limits (CPU, memory, PID) are configurable per sandbox run
+- [x] **HARD-01**: Sandbox containers run with read-only rootfs and writable tmpfs for /tmp
+- [x] **HARD-02**: Sandbox containers run with --cap-drop=ALL and --security-opt=no-new-privileges
+- [x] **HARD-03**: Sandbox containers use Docker's default seccomp profile (custom tuning deferred)
+- [x] **HARD-04**: Resource limits (CPU, memory, PID) are configurable per sandbox run
 
 ### Development Environment
 
@@ -106,10 +106,10 @@ Which phases cover which requirements. Updated during roadmap creation.
 | PROXY-07 | Phase 1 | Complete |
 | MIG-01 | Phase 1 | Complete |
 | MIG-02 | Phase 1 | Complete |
-| HARD-01 | Phase 2 | Pending |
-| HARD-02 | Phase 2 | Pending |
-| HARD-03 | Phase 2 | Pending |
-| HARD-04 | Phase 2 | Pending |
+| HARD-01 | Phase 2 | Complete |
+| HARD-02 | Phase 2 | Complete |
+| HARD-03 | Phase 2 | Complete |
+| HARD-04 | Phase 2 | Complete |
 | DEVENV-01 | Phase 3 | Pending |
 | DEVENV-02 | Phase 3 | Pending |
 | DEVENV-03 | Phase 3 | Pending |
