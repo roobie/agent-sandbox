@@ -108,6 +108,12 @@ Recent decisions affecting current work:
 
 None yet.
 
+### Quick Tasks Completed
+
+| # | Description | Date | Commit | Directory |
+|---|-------------|------|--------|-----------|
+| 260324-61b | add option/flag to mount the $HOME/.claude readonly in the container | 2026-03-24 | 5ea1c9a | [260324-61b-add-option-flag-to-mount-the-home-claude](./quick/260324-61b-add-option-flag-to-mount-the-home-claude/) |
+
 ### Blockers/Concerns
 
 - Migration cutover (Phase 1): Running init-firewall.py alongside proxy simultaneously corrupts Docker DNS NAT — must be a clean single cutover. Verify with `getent hosts squid` inside sandbox immediately after.
