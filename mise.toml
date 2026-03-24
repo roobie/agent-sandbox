@@ -1,2 +1,89 @@
 [tools]
 python = "3.13.11"
+
+[tasks."proxy:start"]
+description = "Start the Squid proxy container and wait for healthy"
+run = """
+docker compose up -d proxy
+echo "Waiting for proxy health..."
+until docker inspect --format='{{.State.Health.Status}}' agent-sandbox-proxy 2>/dev/null | grep -q healthy; do
+  sleep 1
+done
+echo "Proxy is healthy"
+"""
+
+[tasks."proxy:stop"]
+description = "Stop the Squid proxy container"
+run = "docker compose stop proxy"
+
+[tasks."proxy:status"]
+description = "Show proxy container status"
+run = "docker compose ps proxy"
+
+[tasks."sandbox:build"]
+description = "Build sandbox container images"
+run = "python3 images/build.py all"
+
+[tasks."image:build"]
+description = "Build sandbox container images (alias for sandbox:build)"
+run = "python3 images/build.py all"
+
+[tasks."sandbox:run"]
+description = "Start a sandbox container instance"
+usage = '''
+flag "--name -n <name>" help="Sandbox instance name (used in container_name)" default="default"
+flag "--workspace -w <workspace>" help="Host workspace path to mount at /workspace" default="."
+'''
+run = """
+NAME="${usage_name:-default}"
+WORKSPACE="${usage_workspace:-.}"
+WORKSPACE="$(realpath "$WORKSPACE")"
+docker run -d \
+  --name "agent-sandbox-${NAME}" \
+  --network agent-sandbox_sandbox-internal \
+  --cap-drop ALL \
+  --cap-add SETUID \
+  --cap-add SETGID \
+  --security-opt no-new-privileges:true \
+  --read-only \
+  --tmpfs /tmp:size=268435456 \
+  --tmpfs /run:size=67108864 \
+  --cpus "${SANDBOX_CPUS:-2}" \
+  --memory "${SANDBOX_MEMORY:-4g}" \
+  --pids-limit "${SANDBOX_PIDS:-512}" \
+  --volume "${WORKSPACE}:/workspace" \
+  --volume "claude-state:/home/dev/.claude" \
+  --volume "command-history:/commandhistory" \
+  --volume "mise-state:/home/dev/.mise" \
+  --volume "cargo-state:/home/dev/.cargo" \
+  --volume "local-bin-state:/home/dev/.local/bin" \
+  --volume "npm-cache:/home/dev/.npm" \
+  --volume "pip-cache:/home/dev/.cache/pip" \
+  --volume "go-cache:/home/dev/go/pkg/mod" \
+  --env TZ="${TZ:-America/Los_Angeles}" \
+  --env CLAUDE_CONFIG_DIR=/home/dev/.claude \
+  --env POWERLEVEL9K_DISABLE_GITSTATUS=true \
+  --env HTTP_PROXY=http://proxy:3128 \
+  --env HTTPS_PROXY=http://proxy:3128 \
+  --env http_proxy=http://proxy:3128 \
+  --env https_proxy=http://proxy:3128 \
+  --env NO_PROXY=localhost,127.0.0.1 \
+  --env no_proxy=localhost,127.0.0.1 \
+  --env GOPROXY=https://proxy.golang.org,direct \
+  --env CARGO_HTTP_PROXY=http://proxy:3128 \
+  --workdir /workspace \
+  agent-sandbox-claude:local
+echo "Sandbox agent-sandbox-${NAME} started (workspace: ${WORKSPACE})"
+"""
+
+[tasks."sandbox:stop"]
+description = "Stop and remove a named sandbox container"
+usage = '''
+flag "--name -n <name>" help="Sandbox instance name to stop" default="default"
+'''
+run = """
+NAME="${usage_name:-default}"
+docker stop "agent-sandbox-${NAME}"
+docker rm "agent-sandbox-${NAME}"
+echo "Sandbox agent-sandbox-${NAME} stopped"
+"""
