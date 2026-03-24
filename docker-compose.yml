@@ -30,6 +30,17 @@ services:
       proxy:
         condition: service_healthy
     # cap_add REMOVED — no NET_ADMIN, no NET_RAW required (proxy handles egress)
+    read_only: true
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    pids_limit: ${SANDBOX_PIDS:-512}
+    deploy:
+      resources:
+        limits:
+          cpus: '${SANDBOX_CPUS:-2}'
+          memory: ${SANDBOX_MEMORY:-4g}
     volumes:
       # Your project workspace
       - .:/workspace
@@ -44,6 +55,15 @@ services:
       # Host Claude config (optional - comment out if not needed)
       # - ${HOME}/.claude/CLAUDE.md:/home/dev/.claude/CLAUDE.md:ro
       # - ${HOME}/.claude/settings.json:/home/dev/.claude/settings.json:ro
+      # Writable tmpfs mounts required under read_only: true
+      - type: tmpfs
+        target: /tmp
+        tmpfs:
+          size: 268435456    # 256MB in bytes
+      - type: tmpfs
+        target: /run
+        tmpfs:
+          size: 67108864     # 64MB in bytes
     working_dir: /workspace
     stdin_open: true
     tty: true
