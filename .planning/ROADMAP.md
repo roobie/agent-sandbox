@@ -88,7 +88,12 @@ Plans:
   2. Squid access logs are reachable from the host (via volume or `docker logs`) and show which domains the agent contacted during a run
   3. `docker pull ghcr.io/<org>/agent-sandbox:latest` succeeds without a local build; the image is published by a GitHub Actions workflow on push to main
   4. `mise run image:build` builds the image locally from source; no orphaned Dockerfiles or compose fragments exist from the old iptables approach
-**Plans**: TBD
+**Plans**: 3 plans
+
+Plans:
+- [ ] 04-01-PLAN.md — Observability mise tasks (sandbox:logs, proxy:logs, enhanced sandbox:stop with diff capture)
+- [ ] 04-02-PLAN.md — CI/CD proxy image publishing to GHCR with scoped caches
+- [ ] 04-03-PLAN.md — Orphaned artifact cleanup (README, copilot Dockerfile, docs/policy)
 
 ## Progress
 
@@ -101,4 +106,4 @@ Phases execute in numeric order: 1 → 2 → 3 → 4
 | 2. Container Hardening | 2/2 | Complete   | 2026-03-24 |
 | 3. Development Environment | 4/4 | Complete   | 2026-03-24 |
 | 03.1. Fix uv + mise templates | 1/1 | Complete    | 2026-03-24 |
-| 4. Observability and Distribution | 0/TBD | Not started | - |
+| 4. Observability and Distribution | 0/3 | Not started | - |
