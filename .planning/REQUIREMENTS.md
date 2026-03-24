@@ -29,17 +29,17 @@ Requirements for initial release. Each maps to roadmap phases.
 - [ ] **DEVENV-01**: Base image is Debian bookworm slim with common dev tools (git, curl, ripgrep, jq, neovim, tmux, fzf, build-essential, cmake)
 - [ ] **DEVENV-02**: Language runtimes installed via mise: Node (latest LTS), Python (3.12+), Go (latest), Rust 1.94.x, uv 0.10.x, Bun 1.3.x, rust-analyzer (latest)
 - [ ] **DEVENV-03**: Runtimes installed via `mise install --system` so they survive volume mount shadowing of home directory
-- [ ] **DEVENV-04**: Package cache volumes (npm, pip, cargo, go modules) persist across sandbox runs
+- [x] **DEVENV-04**: Package cache volumes (npm, pip, cargo, go modules) persist across sandbox runs
 - [ ] **DEVENV-05**: LSP tooling pre-installed: rust-analyzer, pyright, typescript-language-server
 - [ ] **DEVENV-06**: Non-root user execution (dev user) with UID/GID adjustment to match host workspace ownership
-- [ ] **DEVENV-07**: Per-package-manager proxy configuration: .npmrc, cargo config.toml, git config, GOPROXY env var
+- [x] **DEVENV-07**: Per-package-manager proxy configuration: .npmrc, cargo config.toml, git config, GOPROXY env var
 
 ### Orchestration
 
 - [ ] **ORCH-01**: mise tasks on host for proxy lifecycle: `mise run proxy:start`, `mise run proxy:stop`, `mise run proxy:status`
 - [ ] **ORCH-02**: mise tasks on host for sandbox lifecycle: `mise run sandbox:build`, `mise run sandbox:run`, `mise run sandbox:stop`
 - [ ] **ORCH-03**: mise tasks support running multiple named sandbox instances simultaneously
-- [ ] **ORCH-04**: Workspace bind-mounted from host directory into container at /workspace
+- [x] **ORCH-04**: Workspace bind-mounted from host directory into container at /workspace
 
 ### Observability
 
@@ -113,14 +113,14 @@ Which phases cover which requirements. Updated during roadmap creation.
 | DEVENV-01 | Phase 3 | Pending |
 | DEVENV-02 | Phase 3 | Pending |
 | DEVENV-03 | Phase 3 | Pending |
-| DEVENV-04 | Phase 3 | Pending |
+| DEVENV-04 | Phase 3 | Complete |
 | DEVENV-05 | Phase 3 | Pending |
 | DEVENV-06 | Phase 3 | Pending |
-| DEVENV-07 | Phase 3 | Pending |
+| DEVENV-07 | Phase 3 | Complete |
 | ORCH-01 | Phase 3 | Pending |
 | ORCH-02 | Phase 3 | Pending |
 | ORCH-03 | Phase 3 | Pending |
-| ORCH-04 | Phase 3 | Pending |
+| ORCH-04 | Phase 3 | Complete |
 | OBS-01 | Phase 4 | Pending |
 | OBS-02 | Phase 4 | Pending |
 | OBS-03 | Phase 4 | Pending |
