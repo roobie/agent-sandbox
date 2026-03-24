@@ -17,3 +17,23 @@
 
 # mise version resolution
 .mise-versions.jdx.dev
+
+# npm registry
+.npmjs.org
+.npmjs.com
+
+# cargo / crates.io
+.crates.io
+.static.crates.io
+.index.crates.io
+
+# Go modules
+.proxy.golang.org
+.sum.golang.org
+.storage.googleapis.com
+
+# mise runtime downloads
+.nodejs.org
+.static.rust-lang.org
+.bun.sh
+.dl.google.com
