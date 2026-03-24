@@ -127,13 +127,31 @@ docker logs $ARGS "agent-sandbox-${NAME}"
 """
 
 [tasks."sandbox:stop"]
-description = "Stop and remove a named sandbox container"
+description = "Stop and remove a named sandbox container (shows filesystem and workspace diffs)"
 usage = '''
 flag "--name -n <name>" help="Sandbox instance name to stop" default="default"
 '''
 run = """
 NAME="${usage_name:-default}"
-docker stop "agent-sandbox-${NAME}"
-docker rm "agent-sandbox-${NAME}"
-echo "Sandbox agent-sandbox-${NAME} stopped"
+CONTAINER="agent-sandbox-${NAME}"
+
+echo ""
+echo "=== Container filesystem changes ==="
+echo "(A=Added, C=Changed, D=Deleted)"
+docker diff "${CONTAINER}" 2>/dev/null || echo "(no changes or container not found)"
+
+echo ""
+echo "=== Workspace changes ==="
+WORKSPACE=$(docker inspect "${CONTAINER}" \
+  --format '{{ range .Mounts }}{{ if eq .Destination "/workspace" }}{{ .Source }}{{ end }}{{ end }}' 2>/dev/null || echo "")
+if [ -n "$WORKSPACE" ] && [ -d "$WORKSPACE" ]; then
+  git -C "$WORKSPACE" diff --stat 2>/dev/null || echo "(workspace is not a git repo or no changes)"
+else
+  echo "(could not determine workspace path)"
+fi
+
+echo ""
+docker stop "${CONTAINER}"
+docker rm "${CONTAINER}"
+echo "Sandbox ${CONTAINER} stopped"
 """
