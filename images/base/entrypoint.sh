@@ -20,19 +20,32 @@ HOST_GID=$(stat -c '%g' "$TARGET_DIR")
 APP_USER=dev
 APP_GROUP=dev
 
-# Adjust group if necessary
-if [ "$HOST_GID" != "0" ] && [ "$HOST_GID" != "$(id -g "$APP_USER")" ]; then
-    # If a group with HOST_GID exists, reuse it; otherwise, modify app's group
-    if getent group "$HOST_GID" >/dev/null 2>&1; then
-        APP_GROUP=$(getent group "$HOST_GID" | cut -d: -f1)
-    else
-        groupmod -g "$HOST_GID" "$APP_GROUP"
-    fi
+# Under read_only: true, /etc/passwd and /etc/group are not writable.
+# Skip UID/GID adjustment silently in that case — fixed UID 500 is used.
+# Full UID/GID adjustment is a Phase 3 concern (DEVENV-06).
+ETC_WRITABLE=true
+if ! touch /etc/.rw-test 2>/dev/null; then
+    ETC_WRITABLE=false
 fi
+rm -f /etc/.rw-test 2>/dev/null || true
 
-# Adjust user UID
-if [ "$HOST_UID" != "0" ] && [ "$HOST_UID" != "$(id -u "$APP_USER")" ]; then
-    usermod -u "$HOST_UID" -g "$HOST_GID" "$APP_USER"
+if [ "$ETC_WRITABLE" = "true" ]; then
+    # Adjust group if necessary
+    if [ "$HOST_GID" != "0" ] && [ "$HOST_GID" != "$(id -g "$APP_USER")" ]; then
+        # If a group with HOST_GID exists, reuse it; otherwise, modify app's group
+        if getent group "$HOST_GID" >/dev/null 2>&1; then
+            APP_GROUP=$(getent group "$HOST_GID" | cut -d: -f1)
+        else
+            groupmod -g "$HOST_GID" "$APP_GROUP"
+        fi
+    fi
+
+    # Adjust user UID
+    if [ "$HOST_UID" != "0" ] && [ "$HOST_UID" != "$(id -u "$APP_USER")" ]; then
+        usermod -u "$HOST_UID" -g "$HOST_GID" "$APP_USER"
+    fi
+else
+    echo "entrypoint: /etc is read-only, skipping UID/GID adjustment (using fixed UID 500)" >&2
 fi
 
 # by this point, the dev user should be able to write to /workspace
