@@ -27,6 +27,26 @@ RUN mise use -g claude-code@$CLAUDE_CODE_VERSION
 ARG UV_VERSION
 RUN mise use -g uv@$UV_VERSION
 
+# Install language runtimes to system path so they survive mise-state volume mount.
+# System installs go to /usr/local/share/mise/installs/ (not ~/.local/share/mise/installs/)
+# which is outside any named volume mount — available on fresh volumes immediately.
+USER root
+RUN mise install --system node@lts && \
+    mise install --system python@3.13 && \
+    mise install --system go@latest && \
+    mise install --system rust@stable && \
+    mise install --system bun@1.3 && \
+    mise install --system rust-analyzer@latest
+
+# LSP tools via npm backend — must run after node@lts is installed
+RUN mise install --system npm:pyright@latest && \
+    mise install --system npm:typescript-language-server@latest
+
+# Activate all system tools globally so they are on PATH for all users
+RUN mise use --system node@lts python@3.13 go@latest rust@stable \
+    bun@1.3 rust-analyzer@latest \
+    npm:pyright@latest npm:typescript-language-server@latest
+
 # Add Claude to PATH and set up aliases
 RUN echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.zshrc && \
   echo "alias claude='mise exec -- claude'" >> ~/.zshrc && \
