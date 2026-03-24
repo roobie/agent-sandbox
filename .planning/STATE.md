@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: unknown
-stopped_at: Completed 03-03-PLAN.md
-last_updated: "2026-03-24T01:25:01.390Z"
+stopped_at: Completed 03-04-PLAN.md
+last_updated: "2026-03-24T02:01:52.015Z"
 progress:
   total_phases: 4
-  completed_phases: 2
+  completed_phases: 3
   total_plans: 10
-  completed_plans: 9
+  completed_plans: 10
 ---
 
 # Project State
@@ -19,12 +19,12 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-24)
 
 **Core value:** Agents can fetch anything they need from the web but cannot exfiltrate data to unauthorized destinations — enforced at the network layer, not by trusting the agent.
-**Current focus:** Phase 03 — development-environment
+**Current focus:** Phase 03 — development-environment (COMPLETE)
 
 ## Current Position
 
-Phase: 03 (development-environment) — EXECUTING
-Plan: 1 of 4
+Phase: 03 (development-environment) — COMPLETE
+Plan: 4 of 4
 
 ## Performance Metrics
 
@@ -54,6 +54,7 @@ Plan: 1 of 4
 | Phase 03-development-environment P02 | 1 | 2 tasks | 2 files |
 | Phase 03-development-environment P01 | 10 | 2 tasks | 1 files |
 | Phase 03-development-environment P03 | 1 | 2 tasks | 1 files |
+| Phase 03-development-environment P04 | 34 | 1 tasks | 2 files |
 
 ## Accumulated Context
 
@@ -87,6 +88,10 @@ Recent decisions affecting current work:
 - [Phase 03-development-environment]: /etc/cargo/config.toml chosen for cargo proxy — /home/dev/.cargo shadowed by cargo-state volume; system config path avoids the shadow
 - [Phase 03-development-environment]: Health polling uses until/grep loop instead of docker compose wait — wait subcommand not universally available across Docker Compose versions
 - [Phase 03-development-environment]: sandbox:run uses compose-qualified network name agent-sandbox_sandbox-internal — bare sandbox-internal does not resolve outside compose context
+- [Phase 03-development-environment]: MISE_DATA_DIR=/usr/local/share/mise replaces invalid 'mise use --system' — achieves system-wide tool isolation from mise-state volume mount
+- [Phase 03-development-environment]: RUSTUP_HOME=/usr/local/share/rustup and CARGO_HOME=/usr/local/share/cargo — /root/.cargo is drwx------ (inaccessible to non-root); system-readable paths required for rustc/cargo
+- [Phase 03-development-environment]: Volume init container pattern: short-lived privileged container chowns named volumes to UID 500 before constrained sandbox starts (no CAP_CHOWN in sandbox)
+- [Phase 03-development-environment]: sandbox:run requires -i flag on docker run -d — zsh exits immediately without stdin open in daemon mode
 
 ### Pending Todos
 
@@ -100,6 +105,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-24T01:25:01.387Z
-Stopped at: Completed 03-03-PLAN.md
+Last session: 2026-03-24T02:01:48.294Z
+Stopped at: Completed 03-04-PLAN.md
 Resume file: None
