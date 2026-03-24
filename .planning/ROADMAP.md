@@ -74,7 +74,7 @@ Plans:
 **Goal:** Bump the UV_VERSION default in images/build.py from 0.9.26 to 0.10.12 (latest 0.10.x); confirm mise.toml uses usage blocks throughout (no deprecated Tera templates).
 **Requirements**: (none — inserted urgent fix)
 **Depends on:** Phase 3
-**Plans:** 1 plan
+**Plans:** 1/1 plans complete
 
 Plans:
 - [ ] 03.1-01-PLAN.md — Bump UV_VERSION to 0.10.12 and verify mise.toml usage blocks
@@ -100,5 +100,5 @@ Phases execute in numeric order: 1 → 2 → 3 → 4
 | 1. Proxy Infrastructure | 4/4 | Complete   | 2026-03-23 |
 | 2. Container Hardening | 2/2 | Complete   | 2026-03-24 |
 | 3. Development Environment | 4/4 | Complete   | 2026-03-24 |
-| 03.1. Fix uv + mise templates | 0/1 | In progress | - |
+| 03.1. Fix uv + mise templates | 1/1 | Complete    | 2026-03-24 |
 | 4. Observability and Distribution | 0/TBD | Not started | - |

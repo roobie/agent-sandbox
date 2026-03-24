@@ -4,12 +4,12 @@ milestone: v1.0
 milestone_name: milestone
 status: unknown
 stopped_at: Completed 03-04-PLAN.md
-last_updated: "2026-03-24T02:05:31.460Z"
+last_updated: "2026-03-24T02:36:15.676Z"
 progress:
-  total_phases: 4
-  completed_phases: 3
-  total_plans: 10
-  completed_plans: 10
+  total_phases: 5
+  completed_phases: 4
+  total_plans: 11
+  completed_plans: 11
 ---
 
 # Project State
@@ -19,12 +19,12 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-24)
 
 **Core value:** Agents can fetch anything they need from the web but cannot exfiltrate data to unauthorized destinations — enforced at the network layer, not by trusting the agent.
-**Current focus:** Phase 03 — development-environment (COMPLETE)
+**Current focus:** Phase 03.1 — fix-uv-version
 
 ## Current Position
 
-Phase: 03 (development-environment) — COMPLETE
-Plan: 4 of 4
+Phase: 03.1 (fix-uv-version) — EXECUTING
+Plan: 1 of 1
 
 ## Performance Metrics
 
@@ -92,6 +92,10 @@ Recent decisions affecting current work:
 - [Phase 03-development-environment]: RUSTUP_HOME=/usr/local/share/rustup and CARGO_HOME=/usr/local/share/cargo — /root/.cargo is drwx------ (inaccessible to non-root); system-readable paths required for rustc/cargo
 - [Phase 03-development-environment]: Volume init container pattern: short-lived privileged container chowns named volumes to UID 500 before constrained sandbox starts (no CAP_CHOWN in sandbox)
 - [Phase 03-development-environment]: sandbox:run requires -i flag on docker run -d — zsh exits immediately without stdin open in daemon mode
+
+### Roadmap Evolution
+
+- Phase 03.1 inserted after Phase 3: Fix uv version to 0.10.x and replace Tera templates with usage blocks in mise tasks (URGENT)
 
 ### Pending Todos
 
