@@ -31,15 +31,16 @@ Agents can fetch anything they need from the web (packages, docs, APIs) but cann
 - ✓ cap_drop=ALL (SETUID/SETGID retained for gosu) + no-new-privileges — Phase 2
 - ✓ Default seccomp profile active — Phase 2
 - ✓ Configurable resource limits (CPU, memory, PID) via env vars — Phase 2
+- ✓ Full language runtime suite via mise: Node, Python, Go, Rust 1.94.x, uv, Bun 1.3.x — Phase 3
+- ✓ LSP tooling: rust-analyzer, pyright, typescript-language-server — Phase 3
+- ✓ mise tasks for sandbox lifecycle (proxy:start/stop, sandbox:build/run/stop) — Phase 3
+- ✓ Package cache volumes (npm, pip, go) persisting across runs — Phase 3
+- ✓ Per-package-manager proxy config (.npmrc, cargo, git, GOPROXY) — Phase 3
+- ✓ Multi-sandbox support via named instances — Phase 3
 
 ### Active
 
 <!-- Current scope. Building toward these. -->
-
-- [ ] Full language runtime suite via mise: Node, Python, Go, Rust 1.94.x, uv 0.10.x, rust-analyzer, Bun 1.3.x
-- [ ] LSP/editor tooling pre-installed for agent code intelligence
-- [ ] mise tasks for sandbox lifecycle orchestration (build, run, stop, proxy management)
-- [ ] Optional package cache volumes (npm, pip, cargo, go modules) persisting across runs
 - [ ] Published container image (Docker Hub / GHCR) in addition to local build
 - [ ] Execution timeouts for sandbox runs
 - [ ] Observability: stdout/stderr capture, filesystem diff logging
@@ -85,4 +86,4 @@ Tooling reference: `docs/mise.reference.md` — mise is used for both runtime ve
 | Evaluate existing Docker artifacts | Keep what works (base image structure, volume strategy), replace what changes (firewall → proxy) | — Pending |
 
 ---
-*Last updated: 2026-03-24 after Phase 2 completion*
+*Last updated: 2026-03-24 after Phase 3 completion*
