@@ -3,8 +3,8 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: unknown
-stopped_at: Completed 03-02-PLAN.md
-last_updated: "2026-03-24T01:21:57.214Z"
+stopped_at: Completed 03-01-PLAN.md
+last_updated: "2026-03-24T01:22:17.669Z"
 progress:
   total_phases: 4
   completed_phases: 2
@@ -52,6 +52,7 @@ Plan: 1 of 4
 | Phase 02-container-hardening P01 | 17 | 3 tasks | 8 files |
 | Phase 02-container-hardening P02 | 2 | 3 tasks | 0 files |
 | Phase 03-development-environment P02 | 1 | 2 tasks | 2 files |
+| Phase 03-development-environment P01 | 10 | 2 tasks | 1 files |
 
 ## Accumulated Context
 
@@ -81,6 +82,8 @@ Recent decisions affecting current work:
 - [Phase 03-development-environment]: go-cache mounted at /home/dev/go/pkg/mod for correct Go module cache hit behavior
 - [Phase 03-development-environment]: CARGO_HTTP_PROXY set as env var because cargo-state volume mount shadows config.toml at runtime
 - [Phase 03-development-environment]: GOPROXY=proxy.golang.org,direct includes direct fallback for private/non-public modules
+- [Phase 03-development-environment]: mise install --system used instead of mise use -g — user-path installs shadowed by mise-state volume mount; system installs at /usr/local/share/mise/installs/ survive fresh volumes
+- [Phase 03-development-environment]: /etc/cargo/config.toml chosen for cargo proxy — /home/dev/.cargo shadowed by cargo-state volume; system config path avoids the shadow
 
 ### Pending Todos
 
@@ -94,6 +97,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-24T01:21:57.212Z
-Stopped at: Completed 03-02-PLAN.md
+Last session: 2026-03-24T01:22:17.667Z
+Stopped at: Completed 03-01-PLAN.md
 Resume file: None
