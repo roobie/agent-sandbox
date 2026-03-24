@@ -6,7 +6,7 @@ description = "Start the Squid proxy container and wait for healthy"
 run = """
 docker compose up -d proxy
 echo "Waiting for proxy health..."
-until docker inspect --format='{{.State.Health.Status}}' agent-sandbox-proxy 2>/dev/null | grep -q healthy; do
+until docker inspect agent-sandbox-proxy 2>/dev/null | python3 -c "import sys,json; d=json.load(sys.stdin); print(d[0]['State']['Health']['Status'])" 2>/dev/null | grep -q healthy; do
   sleep 1
 done
 echo "Proxy is healthy"
@@ -38,7 +38,23 @@ run = """
 NAME="${usage_name:-default}"
 WORKSPACE="${usage_workspace:-.}"
 WORKSPACE="$(realpath "$WORKSPACE")"
-docker run -d \
+
+# Initialize named volumes with correct ownership (UID/GID 500 = dev user).
+# Named volumes are created root-owned by Docker. The sandbox runs without CAP_CHOWN
+# so the entrypoint cannot fix ownership at runtime. We use a short-lived init container
+# (no security restrictions) to set ownership once. This is idempotent on restarts.
+docker run --rm \
+  --volume "npm-cache:/v/npm" \
+  --volume "pip-cache:/v/pip" \
+  --volume "go-cache:/v/go" \
+  --volume "cargo-state:/v/cargo" \
+  --volume "local-bin-state:/v/localbin" \
+  --volume "command-history:/v/hist" \
+  --volume "mise-state:/v/mise" \
+  debian:bookworm-slim \
+  bash -c "mkdir -p /v/npm /v/pip /v/go /v/cargo/bin /v/localbin /v/hist /v/mise && chown -R 500:500 /v/npm /v/pip /v/go /v/cargo /v/localbin /v/hist /v/mise"
+
+docker run -d -i \
   --name "agent-sandbox-${NAME}" \
   --network agent-sandbox_sandbox-internal \
   --cap-drop ALL \
