@@ -45,7 +45,11 @@ Plans:
   1. A running sandbox container has a read-only rootfs; writes to `/` fail but writes to `/tmp` succeed
   2. `docker inspect` on a running sandbox shows `CapAdd: null`, `SecurityOpt: [no-new-privileges]`, and no CAP_NET_ADMIN
   3. CPU, memory, and PID limits can be changed via environment variable or config before `sandbox:run` without modifying the Compose file
-**Plans**: TBD
+**Plans**: 2 plans
+
+Plans:
+- [ ] 02-01-PLAN.md — Smoke test scaffold, compose hardening directives, and entrypoint read-only rootfs fix
+- [ ] 02-02-PLAN.md — Build, start, and human verification of all HARD-* requirements
 
 ### Phase 3: Development Environment
 **Goal**: Sandbox containers arrive with a fully-functional development environment — all language runtimes pre-installed and accessible, per-package-manager proxy configuration active so all install traffic routes through Squid, and mise tasks on the host covering the full sandbox lifecycle.
@@ -78,6 +82,6 @@ Phases execute in numeric order: 1 → 2 → 3 → 4
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Proxy Infrastructure | 4/4 | Complete   | 2026-03-23 |
-| 2. Container Hardening | 0/TBD | Not started | - |
+| 2. Container Hardening | 0/2 | Not started | - |
 | 3. Development Environment | 0/TBD | Not started | - |
 | 4. Observability and Distribution | 0/TBD | Not started | - |
