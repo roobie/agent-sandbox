@@ -4,8 +4,7 @@
 ARG BASE_IMAGE=agent-sandbox-base:local
 FROM ${BASE_IMAGE}
 
-# Override base policy with Copilot endpoints
-# https://docs.github.com/en/copilot/reference/copilot-allowlist-reference
+# Install mise and Copilot tools as root
 USER root
 
 # Install mise via official APT repo
@@ -17,9 +16,6 @@ RUN install -dm 755 /etc/apt/keyrings && \
   apt-get update && \
   apt-get install -y --no-install-recommends mise && \
   apt-get clean && rm -rf /var/lib/apt/lists/*
-
-COPY policy.json /etc/agent-sandbox/policy.json
-RUN chmod 644 /etc/agent-sandbox/policy.json
 
 # Create _ config directory
 # RUN mkdir -p /home/dev/.claude && chown -R dev:dev /home/dev/.claude
