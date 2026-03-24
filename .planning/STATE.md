@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: unknown
-stopped_at: Phase 4 context gathered
-last_updated: "2026-03-24T02:48:47.391Z"
+stopped_at: "Completed 04-01-PLAN.md (sandbox:logs, proxy:logs, enhanced sandbox:stop)"
+last_updated: "2026-03-24T03:08:30.241Z"
 progress:
   total_phases: 5
   completed_phases: 4
-  total_plans: 11
-  completed_plans: 11
+  total_plans: 14
+  completed_plans: 13
 ---
 
 # Project State
@@ -19,12 +19,12 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-24)
 
 **Core value:** Agents can fetch anything they need from the web but cannot exfiltrate data to unauthorized destinations — enforced at the network layer, not by trusting the agent.
-**Current focus:** Phase 03.1 — fix-uv-version
+**Current focus:** Phase 04 — observability-and-distribution
 
 ## Current Position
 
-Phase: 03.1 (fix-uv-version) — EXECUTING
-Plan: 1 of 1
+Phase: 04 (observability-and-distribution) — EXECUTING
+Plan: 2 of 3
 
 ## Performance Metrics
 
@@ -55,6 +55,8 @@ Plan: 1 of 1
 | Phase 03-development-environment P01 | 10 | 2 tasks | 1 files |
 | Phase 03-development-environment P03 | 1 | 2 tasks | 1 files |
 | Phase 03-development-environment P04 | 34 | 1 tasks | 2 files |
+| Phase 04-observability-and-distribution P02 | 1 | 1 tasks | 1 files |
+| Phase 04-observability-and-distribution P01 | 2 | 2 tasks | 1 files |
 
 ## Accumulated Context
 
@@ -92,6 +94,10 @@ Recent decisions affecting current work:
 - [Phase 03-development-environment]: RUSTUP_HOME=/usr/local/share/rustup and CARGO_HOME=/usr/local/share/cargo — /root/.cargo is drwx------ (inaccessible to non-root); system-readable paths required for rustc/cargo
 - [Phase 03-development-environment]: Volume init container pattern: short-lived privileged container chowns named volumes to UID 500 before constrained sandbox starts (no CAP_CHOWN in sandbox)
 - [Phase 03-development-environment]: sandbox:run requires -i flag on docker run -d — zsh exits immediately without stdin open in daemon mode
+- [Phase 04-observability-and-distribution]: sandbox:logs uses -t (not -n) as short flag for --tail to avoid collision with -n reserved for --name
+- [Phase 04-observability-and-distribution]: docker inspect Go template recovers workspace path dynamically in sandbox:stop — no --workspace re-arg needed
+- [Phase 04-observability-and-distribution]: docker diff uses C (Changed) not M (Modified) — sandbox:stop legend documents A=Added, C=Changed, D=Deleted
+- [Phase 04-observability-and-distribution]: build-proxy CI job runs in parallel with build-base — proxy image is Squid-based and independent of project base image
 
 ### Roadmap Evolution
 
@@ -109,6 +115,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-24T02:48:47.389Z
-Stopped at: Phase 4 context gathered
-Resume file: .planning/phases/04-observability-and-distribution/04-CONTEXT.md
+Last session: 2026-03-24T03:08:22.239Z
+Stopped at: Completed 04-01-PLAN.md (sandbox:logs, proxy:logs, enhanced sandbox:stop)
+Resume file: None

@@ -43,14 +43,14 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Observability
 
-- [ ] **OBS-01**: Agent stdout/stderr captured via Docker logs
-- [ ] **OBS-02**: Filesystem diff logging: docker diff for container changes + git diff for workspace changes, captured at sandbox stop
-- [ ] **OBS-03**: Squid access logs available for auditing which domains agents accessed
+- [x] **OBS-01**: Agent stdout/stderr captured via Docker logs
+- [x] **OBS-02**: Filesystem diff logging: docker diff for container changes + git diff for workspace changes, captured at sandbox stop
+- [x] **OBS-03**: Squid access logs available for auditing which domains agents accessed
 
 ### Distribution
 
-- [ ] **DIST-01**: Container images published to GHCR via CI/CD pipeline
-- [ ] **DIST-02**: Images also buildable from source via mise task (`mise run image:build`)
+- [x] **DIST-01**: Container images published to GHCR via CI/CD pipeline
+- [x] **DIST-02**: Images also buildable from source via mise task (`mise run image:build`)
 - [ ] **DIST-03**: Existing Docker artifacts evaluated and either reused or replaced (not left orphaned)
 
 ### Migration
@@ -121,11 +121,11 @@ Which phases cover which requirements. Updated during roadmap creation.
 | ORCH-02 | Phase 3 | Complete |
 | ORCH-03 | Phase 3 | Complete |
 | ORCH-04 | Phase 3 | Complete |
-| OBS-01 | Phase 4 | Pending |
-| OBS-02 | Phase 4 | Pending |
-| OBS-03 | Phase 4 | Pending |
-| DIST-01 | Phase 4 | Pending |
-| DIST-02 | Phase 4 | Pending |
+| OBS-01 | Phase 4 | Complete |
+| OBS-02 | Phase 4 | Complete |
+| OBS-03 | Phase 4 | Complete |
+| DIST-01 | Phase 4 | Complete |
+| DIST-02 | Phase 4 | Complete |
 | DIST-03 | Phase 4 | Pending |
 
 **Coverage:**
