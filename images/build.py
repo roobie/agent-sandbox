@@ -8,7 +8,7 @@ from pathlib import Path
 SCRIPT_DIR = Path(__file__).resolve().parent
 
 # Defaults (env overrides allowed)
-TZ = os.environ.get("TZ", "America/Los_Angeles")
+TZ = os.environ.get("TZ", "Europe/Stockholm")
 PYTHON_VERSION = os.environ.get("PYTHON_VERSION", "3.13.11")
 UV_VERSION = os.environ.get("UV_VERSION", "0.10.12")
 GIT_DELTA_VERSION = os.environ.get("GIT_DELTA_VERSION", "0.18.2")

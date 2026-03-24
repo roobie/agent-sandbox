@@ -5,6 +5,8 @@
 
 # Anthropic / Claude Code
 .api.anthropic.com
+.claude.ai
+.platform.claude.com
 .statsig.anthropic.com
 .statsig.com
 

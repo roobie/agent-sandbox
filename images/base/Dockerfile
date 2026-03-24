@@ -38,7 +38,13 @@ RUN apt-get update && \
   tmux \
   ca-certificates \
   build-essential \
+  locales \
+  && sed -i '/en_US.UTF-8/s/^# //' /etc/locale.gen \
+  && locale-gen \
   && apt-get clean && rm -rf /var/lib/apt/lists/*
+
+ENV LANG=en_US.UTF-8
+ENV LC_ALL=en_US.UTF-8
 
 # Set up non-root user
 ARG USERNAME=dev
@@ -83,10 +89,19 @@ ARG ZSH_IN_DOCKER_VERSION=1.2.0
 RUN sh -c "$(wget -O- https://github.com/deluan/zsh-in-docker/releases/download/v${ZSH_IN_DOCKER_VERSION}/zsh-in-docker.sh)" -- \
   -p git \
   -p fzf \
+  -p https://github.com/zsh-users/zsh-autosuggestions \
+  -p https://github.com/zsh-users/zsh-syntax-highlighting \
+  -p https://github.com/zsh-users/zsh-completions \
+  -p history-substring-search \
   -a "source /usr/share/doc/fzf/examples/key-bindings.zsh" \
   -a "source /usr/share/doc/fzf/examples/completion.zsh" \
+  -a "bindkey '^[[A' history-substring-search-up" \
+  -a "bindkey '^[[B' history-substring-search-down" \
   -a "export PROMPT_COMMAND='history -a' && export HISTFILE=/commandhistory/.bash_history" \
   -x
+
+# gitstatus and oh-my-zsh need a writable cache dir
+RUN mkdir -p /home/dev/.cache && chown dev:dev /home/dev/.cache
 
 USER root
 

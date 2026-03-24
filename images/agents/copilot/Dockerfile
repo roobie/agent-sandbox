@@ -28,14 +28,11 @@ RUN mise use -g claude-code@$CLAUDE_CODE_VERSION
 ARG UV_VERSION
 RUN mise use -g uv@$UV_VERSION
 
-# Add Claude to PATH and set up aliases
-RUN echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.zshrc && \
-  echo "alias claude='mise exec -- claude'" >> ~/.zshrc && \
-  echo "alias yolo-claude='cd /workspace && claude --dangerously-skip-permissions'" >> ~/.zshrc && \
-  echo "alias yc='yolo-claude'" >> ~/.zshrc
-
-RUN mise exec -- \
-    claude mcp add serena -- uvx --from git+https://github.com/oraios/serena serena start-mcp-server --context claude-code --project "$(pwd)"
+# Activate mise in shell — puts all mise-managed tools on PATH automatically
+RUN echo 'eval "$(mise activate zsh)"' >> /home/dev/.zshrc && \
+  echo 'export PATH="$HOME/.local/bin:$PATH"' >> /home/dev/.zshrc && \
+  echo "alias yolo-claude='cd /workspace && claude --dangerously-skip-permissions'" >> /home/dev/.zshrc && \
+  echo "alias yc='yolo-claude'" >> /home/dev/.zshrc
 
 EXPOSE 24282
 

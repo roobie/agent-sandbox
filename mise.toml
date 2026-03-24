@@ -27,10 +27,8 @@ flag "--follow -f" help="Follow log output (live tail)"
 flag "--tail -n <lines>" help="Number of lines to show from end" default="100"
 '''
 run = """
-FOLLOW="${usage_follow:-}"
-TAIL="${usage_tail:-100}"
-ARGS="--tail ${TAIL}"
-if [ -n "$FOLLOW" ]; then
+ARGS="--tail ${usage_tail:-100}"
+if [ "${usage_follow:-}" = "true" ]; then
   ARGS="$ARGS --follow"
 fi
 docker logs $ARGS agent-sandbox-proxy
@@ -47,17 +45,18 @@ run = "python3 images/build.py all"
 [tasks."sandbox:run"]
 description = "Start a sandbox container instance"
 usage = '''
-flag "--name -n <name>" help="Sandbox instance name (used in container_name)" default="default"
+flag "--name -n <name>" help="Sandbox instance name (defaults to workspace dir name)"
 flag "--workspace -w <workspace>" help="Host workspace path to mount at /workspace" default="."
 flag "--claude-config -c" help="Mount host ~/.claude readonly into container at /home/dev/.host-claude"
 '''
 run = """
-NAME="${usage_name:-default}"
 WORKSPACE="${usage_workspace:-.}"
 WORKSPACE="$(realpath "$WORKSPACE")"
+# Default name to workspace directory basename if --name not provided
+NAME="${usage_name:-$(basename "$WORKSPACE")}"
 
 CLAUDE_MOUNT=""
-if [ -n "${usage_claude_config:-}" ]; then
+if [ "${usage_claude_config:-}" = "true" ]; then
   HOST_CLAUDE="${HOME}/.claude"
   if [ -d "$HOST_CLAUDE" ]; then
     CLAUDE_MOUNT="--volume ${HOST_CLAUDE}:/home/dev/.host-claude:ro"
@@ -66,10 +65,20 @@ if [ -n "${usage_claude_config:-}" ]; then
   fi
 fi
 
+# Mount host git identity readonly if available
+GIT_MOUNT=""
+if [ -f "${HOME}/.gitconfig" ]; then
+  GIT_MOUNT="--volume ${HOME}/.gitconfig:/home/dev/.gitconfig:ro"
+elif [ -f "${XDG_CONFIG_HOME:-${HOME}/.config}/git/config" ]; then
+  GIT_MOUNT="--volume ${XDG_CONFIG_HOME:-${HOME}/.config}/git/config:/home/dev/.gitconfig:ro"
+fi
+
 # Initialize named volumes with correct ownership (UID/GID 500 = dev user).
 # Named volumes are created root-owned by Docker. The sandbox runs without CAP_CHOWN
 # so the entrypoint cannot fix ownership at runtime. We use a short-lived init container
 # (no security restrictions) to set ownership once. This is idempotent on restarts.
+# For mise-state: copy the full directory tree from the image on first run so that
+# cache/state subdirs already exist with correct ownership.
 docker run --rm \
   --volume "npm-cache:/v/npm" \
   --volume "pip-cache:/v/pip" \
@@ -78,8 +87,9 @@ docker run --rm \
   --volume "local-bin-state:/v/localbin" \
   --volume "command-history:/v/hist" \
   --volume "mise-state:/v/mise" \
-  debian:bookworm-slim \
-  bash -c "mkdir -p /v/npm /v/pip /v/go /v/cargo/bin /v/localbin /v/hist /v/mise && chown -R 500:500 /v/npm /v/pip /v/go /v/cargo /v/localbin /v/hist /v/mise"
+  --entrypoint bash \
+  agent-sandbox-claude:local \
+  -c "if [ ! -f /v/mise/.initialized ]; then cp -a /home/dev/.mise/. /v/mise/ && touch /v/mise/.initialized; fi && mkdir -p /v/npm /v/pip /v/go /v/cargo/bin /v/localbin /v/hist && chown -R 500:500 /v/npm /v/pip /v/go /v/cargo /v/localbin /v/hist /v/mise"
 
 docker run -d -i \
   --name "agent-sandbox-${NAME}" \
@@ -91,6 +101,7 @@ docker run -d -i \
   --read-only \
   --tmpfs /tmp:size=268435456 \
   --tmpfs /run:size=67108864 \
+  --tmpfs /home/dev/.cache:size=67108864,uid=500,gid=500,exec \
   --cpus "${SANDBOX_CPUS:-2}" \
   --memory "${SANDBOX_MEMORY:-4g}" \
   --pids-limit "${SANDBOX_PIDS:-512}" \
@@ -104,9 +115,12 @@ docker run -d -i \
   --volume "pip-cache:/home/dev/.cache/pip" \
   --volume "go-cache:/home/dev/go/pkg/mod" \
   ${CLAUDE_MOUNT} \
-  --env TZ="${TZ:-America/Los_Angeles}" \
+  ${GIT_MOUNT} \
+  --env TZ="${TZ:-Europe/Stockholm}" \
   --env CLAUDE_CONFIG_DIR=/home/dev/.claude \
-  --env POWERLEVEL9K_DISABLE_GITSTATUS=true \
+  --env EDITOR=nvim \
+  --env VISUAL=nvim \
+  --env MISE_TRUSTED_CONFIG_PATHS=/workspace \
   --env HTTP_PROXY=http://proxy:3128 \
   --env HTTPS_PROXY=http://proxy:3128 \
   --env http_proxy=http://proxy:3128 \
@@ -129,10 +143,8 @@ flag "--tail -t <lines>" help="Number of lines to show from end" default="100"
 '''
 run = """
 NAME="${usage_name:-default}"
-FOLLOW="${usage_follow:-}"
-TAIL="${usage_tail:-100}"
-ARGS="--tail ${TAIL}"
-if [ -n "$FOLLOW" ]; then
+ARGS="--tail ${usage_tail:-100}"
+if [ "${usage_follow:-}" = "true" ]; then
   ARGS="$ARGS --follow"
 fi
 docker logs $ARGS "agent-sandbox-${NAME}"
@@ -154,8 +166,8 @@ docker diff "${CONTAINER}" 2>/dev/null || echo "(no changes or container not fou
 
 echo ""
 echo "=== Workspace changes ==="
-WORKSPACE=$(docker inspect "${CONTAINER}" \
-  --format '{{ range .Mounts }}{{ if eq .Destination "/workspace" }}{{ .Source }}{{ end }}{{ end }}' 2>/dev/null || echo "")
+WORKSPACE=$(docker inspect "${CONTAINER}" --format json 2>/dev/null \
+  | python3 -c "import sys,json; m=json.load(sys.stdin)[0]['Mounts']; print(next((x['Source'] for x in m if x['Destination']=='/workspace'),''))" 2>/dev/null || echo "")
 if [ -n "$WORKSPACE" ] && [ -d "$WORKSPACE" ]; then
   git -C "$WORKSPACE" diff --stat 2>/dev/null || echo "(workspace is not a git repo or no changes)"
 else
@@ -166,4 +178,13 @@ echo ""
 docker stop "${CONTAINER}"
 docker rm "${CONTAINER}"
 echo "Sandbox ${CONTAINER} stopped"
+"""
+
+[tasks."sandbox:attach"]
+description = "Attach to a running sandbox container"
+usage = '''
+arg "<name>" help="Sandbox instance name (e.g. cognex)"
+'''
+run = """
+docker exec -it -u dev "agent-sandbox-${usage_name}" zsh
 """

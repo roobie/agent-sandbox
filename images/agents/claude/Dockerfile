@@ -20,16 +20,6 @@ RUN install -dm 755 /etc/apt/keyrings && \
 RUN mkdir -p /home/dev/.claude && chown -R dev:dev /home/dev/.claude
 USER dev
 
-# Install Claude Code to user-space mise.
-# claude-code is intentionally in the user data dir — it's a user-level tool.
-ARG CLAUDE_CODE_VERSION=latest
-RUN mise use -g claude-code@$CLAUDE_CODE_VERSION
-
-# Configure Serena MCP server for claude-code.
-# Must run before switching to system MISE_DATA_DIR so claude-code is found.
-RUN mise exec -- \
-    claude mcp add serena -- uvx --from git+https://github.com/oraios/serena serena start-mcp-server --context claude-code --project "$(pwd)"
-
 # Install language runtimes to system path so they survive mise-state volume mount.
 # Strategy: point MISE_DATA_DIR at /usr/local/share/mise — outside all named volume mounts.
 # MISE_GLOBAL_CONFIG_FILE ensures the activation config lands in the system data dir.
@@ -47,20 +37,24 @@ ENV RUSTUP_HOME=/usr/local/share/rustup
 ENV CARGO_HOME=/usr/local/share/cargo
 
 USER root
+ARG CLAUDE_CODE_VERSION=latest
 ARG UV_VERSION
-RUN mise install node@lts && \
+RUN mise install claude-code@$CLAUDE_CODE_VERSION && \
+    mise install node@lts && \
     mise install python@3.13 && \
     mise install go@latest && \
     mise install rust@stable && \
     mise install bun@1.3 && \
     mise install rust-analyzer@latest && \
     mise install uv@$UV_VERSION && \
-    chmod -R a+rx /usr/local/share/rustup /usr/local/share/cargo
+    chmod -R a+rx /usr/local/share/rustup /usr/local/share/cargo && \
+    chmod -R a+rX /usr/local/share/mise/installs/claude-code
 
 # Activate all system tools — writes activation entries to MISE_GLOBAL_CONFIG_FILE
 # and generates shims in /usr/local/share/mise/shims/
 RUN mise use -g node@lts python@3.13 go@latest rust@stable \
-    bun@1.3 rust-analyzer@latest uv@$UV_VERSION
+    bun@1.3 rust-analyzer@latest uv@$UV_VERSION claude-code@$CLAUDE_CODE_VERSION && \
+    mise reshim
 
 # Install LSP tools via npm backend (npm shim now available via system node activation)
 RUN mise install npm:pyright@latest && \
@@ -90,11 +84,11 @@ RUN mkdir -p /etc/cargo && \
     printf '[http]\nproxy = "http://proxy:3128"\n' \
     > /etc/cargo/config.toml
 
-# Add Claude to PATH and set up aliases
-RUN echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.zshrc && \
-  echo "alias claude='mise exec -- claude'" >> ~/.zshrc && \
-  echo "alias yolo-claude='cd /workspace && claude --dangerously-skip-permissions'" >> ~/.zshrc && \
-  echo "alias yc='yolo-claude'" >> ~/.zshrc
+# Activate mise in shell — puts all mise-managed tools on PATH automatically
+RUN echo 'eval "$(mise activate zsh)"' >> /home/dev/.zshrc && \
+  echo 'export PATH="$HOME/.local/bin:$PATH"' >> /home/dev/.zshrc && \
+  echo "alias yolo-claude='cd /workspace && claude --dangerously-skip-permissions'" >> /home/dev/.zshrc && \
+  echo "alias yc='yolo-claude'" >> /home/dev/.zshrc
 
 EXPOSE 24282
 

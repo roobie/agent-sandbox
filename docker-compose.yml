@@ -61,6 +61,8 @@ services:
       - go-cache:/home/dev/go/pkg/mod
       # Host Claude config (optional - uncomment to share host config readonly)
       # - ${HOME}/.claude:/home/dev/.host-claude:ro
+      # Host git identity (readonly)
+      - ${HOME}/.gitconfig:/home/dev/.gitconfig:ro
       # Writable tmpfs mounts required under read_only: true
       - type: tmpfs
         target: /tmp
@@ -70,13 +72,20 @@ services:
         target: /run
         tmpfs:
           size: 67108864     # 64MB in bytes
+      # gitstatus needs exec on this tmpfs
+      - type: tmpfs
+        target: /home/dev/.cache
+        tmpfs:
+          size: 67108864
     working_dir: /workspace
     stdin_open: true
     tty: true
     environment:
-      - TZ=${TZ:-America/Los_Angeles}
+      - TZ=${TZ:-Europe/Stockholm}
       - CLAUDE_CONFIG_DIR=/home/dev/.claude
-      - POWERLEVEL9K_DISABLE_GITSTATUS=true
+      - EDITOR=nvim
+      - VISUAL=nvim
+      - MISE_TRUSTED_CONFIG_PATHS=/workspace
       # Proxy routing — both uppercase and lowercase for broad tool compatibility
       - HTTP_PROXY=http://proxy:3128
       - HTTPS_PROXY=http://proxy:3128
