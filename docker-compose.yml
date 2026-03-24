@@ -55,6 +55,10 @@ services:
       - mise-state:/home/dev/.mise
       - cargo-state:/home/dev/.cargo
       - local-bin-state:/home/dev/.local/bin
+      # Package manager caches — persist downloaded packages across sandbox restarts
+      - npm-cache:/home/dev/.npm
+      - pip-cache:/home/dev/.cache/pip
+      - go-cache:/home/dev/go/pkg/mod
       # Host Claude config (optional - comment out if not needed)
       # - ${HOME}/.claude/CLAUDE.md:/home/dev/.claude/CLAUDE.md:ro
       # - ${HOME}/.claude/settings.json:/home/dev/.claude/settings.json:ro
@@ -82,6 +86,10 @@ services:
       # Exclude loopback from proxy routing
       - NO_PROXY=localhost,127.0.0.1
       - no_proxy=localhost,127.0.0.1
+      # Go module proxy — controls where go get fetches modules from
+      - GOPROXY=https://proxy.golang.org,direct
+      # Cargo proxy fallback env var — bypasses volume-shadowed config.toml
+      - CARGO_HTTP_PROXY=http://proxy:3128
 
 networks:
   sandbox-internal:
@@ -97,3 +105,6 @@ volumes:
   mise-state:
   cargo-state:
   local-bin-state:
+  npm-cache:
+  pip-cache:
+  go-cache:
