@@ -10,7 +10,7 @@ services:
       - sandbox-external
     restart: unless-stopped
     healthcheck:
-      test: ["CMD-SHELL", "squid -k check && curl -sf --max-time 3 -x http://localhost:3128 http://mise-versions.jdx.dev"]
+      test: ["CMD-SHELL", "curl -sf --max-time 3 -x http://localhost:3128 http://mise-versions.jdx.dev"]
       interval: 5s
       timeout: 3s
       retries: 3
@@ -29,18 +29,21 @@ services:
     depends_on:
       proxy:
         condition: service_healthy
-    # cap_add REMOVED — no NET_ADMIN, no NET_RAW required (proxy handles egress)
     read_only: true
+    # Drop all capabilities; add back only what the root entrypoint needs to drop privileges to dev user
     cap_drop:
       - ALL
+    cap_add:
+      - SETUID
+      - SETGID
     security_opt:
       - no-new-privileges:true
-    pids_limit: ${SANDBOX_PIDS:-512}
     deploy:
       resources:
         limits:
           cpus: '${SANDBOX_CPUS:-2}'
           memory: ${SANDBOX_MEMORY:-4g}
+          pids: ${SANDBOX_PIDS:-512}
     volumes:
       # Your project workspace
       - .:/workspace
