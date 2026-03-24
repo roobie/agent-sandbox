@@ -36,9 +36,9 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Orchestration
 
-- [ ] **ORCH-01**: mise tasks on host for proxy lifecycle: `mise run proxy:start`, `mise run proxy:stop`, `mise run proxy:status`
-- [ ] **ORCH-02**: mise tasks on host for sandbox lifecycle: `mise run sandbox:build`, `mise run sandbox:run`, `mise run sandbox:stop`
-- [ ] **ORCH-03**: mise tasks support running multiple named sandbox instances simultaneously
+- [x] **ORCH-01**: mise tasks on host for proxy lifecycle: `mise run proxy:start`, `mise run proxy:stop`, `mise run proxy:status`
+- [x] **ORCH-02**: mise tasks on host for sandbox lifecycle: `mise run sandbox:build`, `mise run sandbox:run`, `mise run sandbox:stop`
+- [x] **ORCH-03**: mise tasks support running multiple named sandbox instances simultaneously
 - [x] **ORCH-04**: Workspace bind-mounted from host directory into container at /workspace
 
 ### Observability
@@ -117,9 +117,9 @@ Which phases cover which requirements. Updated during roadmap creation.
 | DEVENV-05 | Phase 3 | Complete |
 | DEVENV-06 | Phase 3 | Complete |
 | DEVENV-07 | Phase 3 | Complete |
-| ORCH-01 | Phase 3 | Pending |
-| ORCH-02 | Phase 3 | Pending |
-| ORCH-03 | Phase 3 | Pending |
+| ORCH-01 | Phase 3 | Complete |
+| ORCH-02 | Phase 3 | Complete |
+| ORCH-03 | Phase 3 | Complete |
 | ORCH-04 | Phase 3 | Complete |
 | OBS-01 | Phase 4 | Pending |
 | OBS-02 | Phase 4 | Pending |
