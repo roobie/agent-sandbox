@@ -47,6 +47,26 @@ RUN mise use --system node@lts python@3.13 go@latest rust@stable \
     bun@1.3 rust-analyzer@latest \
     npm:pyright@latest npm:typescript-language-server@latest
 
+# Per-package-manager proxy configuration baked into image layer.
+# Configured paths are chosen to avoid named volume shadowing at runtime.
+
+USER dev
+
+# npm proxy — /home/dev/.npmrc is NOT under any volume mount
+RUN printf 'proxy=http://proxy:3128\nhttps-proxy=http://proxy:3128\n' \
+    > /home/dev/.npmrc
+
+# git proxy — writes to /home/dev/.gitconfig (not volume-mounted)
+RUN git config --global http.proxy http://proxy:3128
+
+USER root
+
+# cargo proxy — /etc/cargo/config.toml avoids cargo-state:/home/dev/.cargo volume shadowing
+# cargo reads /etc/cargo/config.toml as a system-level config
+RUN mkdir -p /etc/cargo && \
+    printf '[http]\nproxy = "http://proxy:3128"\n' \
+    > /etc/cargo/config.toml
+
 # Add Claude to PATH and set up aliases
 RUN echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.zshrc && \
   echo "alias claude='mise exec -- claude'" >> ~/.zshrc && \
