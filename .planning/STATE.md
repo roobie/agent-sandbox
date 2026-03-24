@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: unknown
-stopped_at: "Completed 04-01-PLAN.md (sandbox:logs, proxy:logs, enhanced sandbox:stop)"
-last_updated: "2026-03-24T03:08:30.241Z"
+stopped_at: "Completed 04-03-PLAN.md (stale reference cleanup, README rewrite)"
+last_updated: "2026-03-24T03:20:00.000Z"
 progress:
   total_phases: 5
   completed_phases: 4
   total_plans: 14
-  completed_plans: 13
+  completed_plans: 14
 ---
 
 # Project State
@@ -23,8 +23,8 @@ See: .planning/PROJECT.md (updated 2026-03-24)
 
 ## Current Position
 
-Phase: 04 (observability-and-distribution) — EXECUTING
-Plan: 2 of 3
+Phase: 04 (observability-and-distribution) — COMPLETE
+Plan: 3 of 3 (complete)
 
 ## Performance Metrics
 
@@ -98,6 +98,7 @@ Recent decisions affecting current work:
 - [Phase 04-observability-and-distribution]: docker inspect Go template recovers workspace path dynamically in sandbox:stop — no --workspace re-arg needed
 - [Phase 04-observability-and-distribution]: docker diff uses C (Changed) not M (Modified) — sandbox:stop legend documents A=Added, C=Changed, D=Deleted
 - [Phase 04-observability-and-distribution]: build-proxy CI job runs in parallel with build-base — proxy image is Squid-based and independent of project base image
+- [Phase 04-observability-and-distribution]: docs/policy/example.json removed alongside schema.md — both iptables-era artifacts with no relevance to current Squid proxy architecture
 
 ### Roadmap Evolution
 
@@ -115,6 +116,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-24T03:08:22.239Z
-Stopped at: Completed 04-01-PLAN.md (sandbox:logs, proxy:logs, enhanced sandbox:stop)
+Last session: 2026-03-24T03:20:00.000Z
+Stopped at: Completed 04-03-PLAN.md (stale reference cleanup, README rewrite)
 Resume file: None

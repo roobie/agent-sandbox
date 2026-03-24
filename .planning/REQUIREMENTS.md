@@ -51,7 +51,7 @@ Requirements for initial release. Each maps to roadmap phases.
 
 - [x] **DIST-01**: Container images published to GHCR via CI/CD pipeline
 - [x] **DIST-02**: Images also buildable from source via mise task (`mise run image:build`)
-- [ ] **DIST-03**: Existing Docker artifacts evaluated and either reused or replaced (not left orphaned)
+- [x] **DIST-03**: Existing Docker artifacts evaluated and either reused or replaced (not left orphaned)
 
 ### Migration
 
@@ -126,7 +126,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | OBS-03 | Phase 4 | Complete |
 | DIST-01 | Phase 4 | Complete |
 | DIST-02 | Phase 4 | Complete |
-| DIST-03 | Phase 4 | Pending |
+| DIST-03 | Phase 4 | Complete |
 
 **Coverage:**
 - v1 requirements: 30 total
