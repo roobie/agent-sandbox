@@ -3,7 +3,7 @@
 Run AI coding agents in a locked-down local sandbox with:
 
 - Minimal filesystem access (only your repo + project-scoped agent state)
-- Restricted outbound network (iptables-based allowlist)
+- Restricted outbound network (Squid proxy with domain allowlist via SNI peek/splice)
 - Reproducible environments (Debian container with pinned dependencies)
 
 Target platform: [Colima](https://github.com/abiosoft/colima) + [Docker Engine](https://docs.docker.com/engine/) on Apple Silicon. Should work on any Docker-compatible runtime.
@@ -12,77 +12,61 @@ Target platform: [Colima](https://github.com/abiosoft/colima) + [Docker Engine](
 
 Creates a sandboxed environment for Claude Code that:
 
-- Blocks all outbound network traffic by default
-- Allows only specific domains that you specify in a policy file
-- Runs as non-root user with limited sudo for firewall initialization in entrypoint
+- Routes all outbound traffic through a shared Squid proxy
+- Allows only domains listed in `config/allowlist.txt` (HTTPS verified via SNI peek/splice, no TLS decryption)
+- Runs as non-root user with all capabilities dropped and read-only rootfs
 - Persists Claude credentials and configuration in a Docker volume across container rebuilds
-
-## Runtime modes
-
-Two modes are supported, using the same images:
-
-| Mode | Best for | How to use |
-|------|----------|------------|
-| **Devcontainer** | VS Code users | Open project in Dev Container |
-| **Compose** | CLI users, non-VS Code editors | `docker compose up -d && docker compose exec agent zsh` |
-
-Both modes provide identical sandboxing. The difference is how the firewall gets initialized:
-- **Devcontainer**: VS Code bypasses Docker entrypoints, so firewall runs via `postStartCommand`
-- **Compose**: Firewall runs via the container's entrypoint script
-
-Choose based on your editor preference. The quick start below covers both.
 
 ## Quick start (macOS + Colima)
 
 ### 1. Install prerequisites
 
-You need docker and docker-compose installed. So far we've only tested with Colima + Docker Engine, but this should work with Docker Desktop for Mac or Podman as well. Instructions that follow are for Colima.
+You need docker, docker-compose, and mise installed. We have tested with Colima + Docker Engine; this should work with Docker Desktop for Mac or Podman as well.
 
 ```bash
-brew install colima docker docker-compose
+brew install colima docker docker-compose mise
 colima start --cpu 4 --memory 8 --disk 60
 ```
 
 If you previously used Docker Desktop, set your Docker credential helper to `osxkeychain` (not `desktop`) in `~/.docker/config.json`.
 
-### 2. Copy template to your project
-
-Clone the repo to get the template files (images are pulled from GHCR automatically):
+### 2. Clone the repo
 
 ```bash
 git clone https://github.com/mattolson/agent-sandbox.git
+cd agent-sandbox
 ```
 
-#### Option A: Devcontainer (VS Code)
+### 3. Start the proxy
+
+The shared Squid proxy must be running before starting any sandbox containers:
 
 ```bash
-cp -R agent-sandbox/devcontainer/templates/minimal/claude/.devcontainer /path/to/your/project/
+mise run proxy:start
 ```
 
-Then open your project in VS Code:
+This starts a single Squid proxy container that all sandbox instances share. It only needs to run once per host session.
 
-- Install the Dev Containers extension
-- Command Palette -> Dev Containers: Reopen in Container
-
-#### Option B: Docker Compose (CLI)
+### 4. Run a sandbox
 
 ```bash
-cp agent-sandbox/devcontainer/templates/minimal/claude/docker-compose.yml /path/to/your/project/
-cd /path/to/your/project
-docker compose up -d
-docker compose exec agent zsh
+mise run sandbox:run --workspace /path/to/your/project
 ```
 
-### 3. Authenticate Claude Code (first time only)
+The sandbox container joins the internal Docker network, with all outbound traffic routed through the proxy.
 
-From your **host terminal** (not the VS Code integrated terminal):
+### 5. Enter the sandbox
 
 ```bash
-# Find your container name
-docker ps
+docker exec -it agent-sandbox-default zsh
+```
 
-# Exec into it
-docker exec -it <container-name> zsh -i -c 'claude'
+### 6. Authenticate Claude Code (first time only)
+
+From inside the container:
+
+```bash
+claude
 ```
 
 This triggers the OAuth flow:
@@ -94,7 +78,7 @@ This triggers the OAuth flow:
 
 Credentials persist in a Docker volume. You only need to do this once per project.
 
-### 4. Run Claude Code
+### 7. Run Claude Code
 
 From inside the container:
 
@@ -104,122 +88,76 @@ claude
 yolo-claude
 ```
 
-For compose mode, stop the container when done:
+### 8. Stop the sandbox when done
 
 ```bash
-docker compose down
+mise run sandbox:stop
 ```
+
+This stops and removes the sandbox container. The diff of your workspace is shown on exit.
 
 ## Network policy
 
-The firewall blocks all outbound by default. Each image includes a default policy with the domains it needs:
+Outbound traffic is filtered by a Squid proxy using domain-based ACLs. The allowlist lives at `config/allowlist.txt`.
 
-| Image | Default policy |
-|-------|----------------|
-| **Base** | GitHub only |
-| **Claude agent** | GitHub + Claude Code (api.anthropic.com, sentry.io, statsig.*) |
-| **Devcontainer** | GitHub + Claude Code + VS Code (marketplace, updates, telemetry) |
+### Allowlist format
 
-This means everything works out of the box with no configuration.
+One domain per line. A leading dot matches the domain and all subdomains (e.g., `.github.com` matches `github.com`, `api.github.com`, `raw.githubusercontent.com`).
 
-### Customizing the policy
-
-To add or remove domains, create a policy file at `~/.config/agent-sandbox/policy.yaml`:
-
-```yaml
-services:
-  - github  # Dynamic IP fetch from api.github.com/meta
-
-domains:
-  # Claude Code
-  - api.anthropic.com
-  - sentry.io
-  - statsig.anthropic.com
-  - statsig.com
-
-  # Add your own domains here
-  - pypi.org
+```
+# Example entries
+.github.com
+.api.anthropic.com
+.pypi.org
 ```
 
-Then mount it in your config:
+### Default allowlist
 
-**devcontainer.json:**
-```json
-"mounts": [
-  "source=${localEnv:HOME}/.config/agent-sandbox/policy.yaml,target=/etc/agent-sandbox/policy.yaml,type=bind,readonly"
-]
+The default `config/allowlist.txt` includes:
+
+- GitHub (`.github.com`, `.githubusercontent.com`)
+- Claude Code (`.api.anthropic.com`, `.statsig.anthropic.com`, `.statsig.com`, `.sentry.io`)
+- Package registries (`.pypi.org`, `.npmjs.org`, `.crates.io`, `.proxy.golang.org`, and others)
+- Runtime downloads for mise-managed tools (`.nodejs.org`, `.static.rust-lang.org`, `.bun.sh`, etc.)
+
+### Customizing the allowlist
+
+Edit `config/allowlist.txt` and restart the proxy:
+
+```bash
+# Add your domains to config/allowlist.txt, then:
+mise run proxy:stop
+mise run proxy:start
 ```
 
-**docker-compose.yml:**
-```yaml
-volumes:
-  - ${HOME}/.config/agent-sandbox/policy.yaml:/etc/agent-sandbox/policy.yaml:ro
-```
-
-The policy file must live outside the workspace. If it were inside, the agent could modify it and re-run the firewall to allow exfiltration.
-
-Changes take effect on container restart.
+The allowlist must live outside the workspace. If the agent could modify it and restart the proxy, it could allow exfiltration to arbitrary destinations.
 
 ## How it works
 
-The firewall is initialized by `init-firewall.sh`, which:
+Sandbox containers join an internal Docker network (`sandbox-internal`) with no direct internet access. A shared Squid proxy bridges to the external network:
 
-1. Reads the policy file (`/etc/agent-sandbox/policy.yaml`)
-2. Creates an ipset for allowed IPs
-3. For each service (e.g., `github`), fetches IP ranges dynamically
-4. For each domain, resolves via DNS and adds IPs to the set
-5. Sets iptables rules to DROP all outbound except to the ipset
-6. Verifies the firewall works (example.com blocked, at least one allowed endpoint reachable)
+1. `HTTP_PROXY` and `HTTPS_PROXY` env vars route all container traffic through Squid at `proxy:3128`
+2. Squid uses SNI peek/splice to inspect the destination hostname from the TLS ClientHello without decrypting the connection
+3. Destinations matching `config/allowlist.txt` are spliced through; all others receive a `TCP_DENIED` response
+4. Access logs stream to `docker logs agent-sandbox-proxy` for audit
 
-**Initialization differs by mode:**
-- **Compose mode**: The entrypoint script runs `init-firewall.sh` automatically
-- **Devcontainer mode**: VS Code bypasses entrypoints, so `postStartCommand` triggers initialization
-
-The script is idempotent (checks for existing rules before running), so both paths work correctly.
-
-The container runs as a non-root `dev` user with passwordless sudo only for the firewall setup commands.
+No TLS decryption. No CA cert injection. No certificate pinning breakage.
 
 ## Security notes
 
-This project reduces risk but does not eliminate it. Local dev is inherently best-effort sandboxing. For example, operating as a VS Code devcontainer opens up a channel to the IDE and installing extensions can introduce risk.
+This project reduces risk but does not eliminate it. Local dev is inherently best-effort sandboxing.
 
 Key principles:
 
 - Minimal mounts: only the repo workspace + project-scoped agent state
 - Prefer short-lived credentials (SSO/STS) and read-only IAM roles
-- Firewall verification runs at every container start
+- All capabilities dropped (`--cap-drop=ALL`), read-only rootfs, `no-new-privileges`
+- Egress enforced at the network layer via Squid proxy, not by trusting the agent
+- Proxy enforcement cannot be bypassed by the agent — the agent container has no direct internet path
 
 ## Roadmap
 
-Project plan can be seen in [docs/plan/project.md](./docs/plan/project.md) and related files, but here is the overview:
-
-### m1: Devcontainer template (done)
-
-- Base + agent-specific images (`images/`)
-- Policy YAML for configurable domain allowlists
-- Reusable template (`devcontainer/templates/minimal/claude/`)
-- Documentation for adding to other projects
-
-### m2: Published images
-
-- Build and publish images to GitHub Container Registry
-- Pin images by digest for reproducibility
-
-### m3: CLI
-
-- `agentbox init` - scaffold devcontainer from template
-- `agentbox bump` - update image digests
-- `agentbox policy` - manage allowlist domains
-
-### m4: Multi-agent support
-
-- Support for Codex, OpenCode, and other agents
-- Agent-specific images and configuration
-
-### m5: Proxy enforcement and logging
-
-- Proxy-based network enforcement for request-level logging
-- Docker Compose stack with structured audit logs
+See [`.planning/ROADMAP.md`](./.planning/ROADMAP.md) for the full phased development plan.
 
 ## Contributing
 
