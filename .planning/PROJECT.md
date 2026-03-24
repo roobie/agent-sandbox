@@ -37,13 +37,14 @@ Agents can fetch anything they need from the web (packages, docs, APIs) but cann
 - ✓ Package cache volumes (npm, pip, go) persisting across runs — Phase 3
 - ✓ Per-package-manager proxy config (.npmrc, cargo, git, GOPROXY) — Phase 3
 - ✓ Multi-sandbox support via named instances — Phase 3
+- ✓ Published container images to GHCR (base, claude, proxy) via CI — Phase 4
+- ✓ Observability: stdout/stderr via docker logs, filesystem diff at sandbox stop, Squid access log auditing — Phase 4
+- ✓ Orphaned iptables-era artifacts cleaned up (policy.json, init-firewall.py references removed) — Phase 4
 
 ### Active
 
 <!-- Current scope. Building toward these. -->
-- [ ] Published container image (Docker Hub / GHCR) in addition to local build
 - [ ] Execution timeouts for sandbox runs
-- [ ] Observability: stdout/stderr capture, filesystem diff logging
 
 ### Out of Scope
 
@@ -57,9 +58,9 @@ Agents can fetch anything they need from the web (packages, docs, APIs) but cann
 
 ## Context
 
-The existing codebase has a working iptables/ipset-based firewall approach that controls egress per-container. The new direction moves egress control to a shared Squid proxy container, which is architecturally cleaner for multi-agent scenarios — one proxy serves all sandboxes, one place to manage ACLs.
+The codebase uses a shared Squid proxy container for network egress control. All sandbox containers route through the proxy via an internal Docker network — no direct internet access. The proxy enforces a domain allowlist via SNI peek/splice (no TLS decryption). The old iptables/ipset firewall approach has been fully removed.
 
-The existing Docker artifacts (base image, agent images, build script, compose file, firewall script) should be evaluated for reuse. The base Dockerfile and volume strategy are solid foundations. The iptables firewall approach will be replaced by proxy-based egress, but the policy-as-JSON concept can evolve into Squid ACL configuration.
+Images are published to GHCR via GitHub Actions CI on push to main. Three images: base, claude agent, and proxy. Local builds via `mise run image:build`.
 
 Research reference: `docs/research.md` — comprehensive survey of sandbox patterns, container hardening, and proxy approaches.
 Tooling reference: `docs/mise.reference.md` — mise is used for both runtime version management inside the container and task orchestration on the host.
@@ -70,7 +71,7 @@ Tooling reference: `docs/mise.reference.md` — mise is used for both runtime ve
 - **Proxy**: Squid in a separate long-running container, shared across sandboxes via Docker network
 - **Orchestration**: mise tasks initially, potential CLI tool later if complexity warrants
 - **Distribution**: Both pre-built image (registry) and buildable from source
-- **Capabilities**: Containers need NET_ADMIN only if iptables fallback is needed; proxy-based approach may eliminate this requirement
+- **Capabilities**: cap_drop=ALL with SETUID/SETGID retained for gosu; no NET_ADMIN needed
 - **Host compatibility**: Linux native, macOS via Colima/Docker Desktop, Windows via Docker Desktop
 
 ## Key Decisions
@@ -79,11 +80,11 @@ Tooling reference: `docs/mise.reference.md` — mise is used for both runtime ve
 
 | Decision | Rationale | Outcome |
 |----------|-----------|---------|
-| Squid proxy over iptables for egress | Centralized control for multi-agent, easier ACL management, no per-container NET_ADMIN needed | — Pending |
-| Shared proxy (not sidecar) | One proxy for N sandboxes, simpler than N sidecars, single ACL config | — Pending |
-| Debian slim over Alpine | Better package compatibility, agents expect glibc environment | — Pending |
-| mise for runtimes + orchestration | Already in use for agent tooling, extends naturally to host-side tasks | — Pending |
-| Evaluate existing Docker artifacts | Keep what works (base image structure, volume strategy), replace what changes (firewall → proxy) | — Pending |
+| Squid proxy over iptables for egress | Centralized control for multi-agent, easier ACL management, no per-container NET_ADMIN needed | Shipped (Phase 1) |
+| Shared proxy (not sidecar) | One proxy for N sandboxes, simpler than N sidecars, single ACL config | Shipped (Phase 1) |
+| Debian slim over Alpine | Better package compatibility, agents expect glibc environment | Shipped |
+| mise for runtimes + orchestration | Already in use for agent tooling, extends naturally to host-side tasks | Shipped (Phase 3) |
+| GHCR image publishing via CI | Users can pull without building locally; CI builds on push to main | Shipped (Phase 4) |
 
 ---
-*Last updated: 2026-03-24 after Phase 3 completion*
+*Last updated: 2026-03-24 after Phase 4 completion — all v1 milestone phases complete*
