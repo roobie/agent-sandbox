@@ -14,6 +14,7 @@ UV_VERSION = os.environ.get("UV_VERSION", "0.10.12")
 GIT_DELTA_VERSION = os.environ.get("GIT_DELTA_VERSION", "0.18.2")
 ZSH_IN_DOCKER_VERSION = os.environ.get("ZSH_IN_DOCKER_VERSION", "1.2.0")
 CLAUDE_CODE_VERSION = os.environ.get("CLAUDE_CODE_VERSION", "latest")
+GSD_VERSION = os.environ.get("GSD_VERSION", "1.28.0")
 
 
 def run_docker_build(tag: str, context: Path, build_args: dict[str, str]) -> None:
@@ -56,6 +57,7 @@ def build_claude() -> None:
         "CLAUDE_CODE_VERSION": CLAUDE_CODE_VERSION,
         "PYTHON_VERSION": PYTHON_VERSION,
         "UV_VERSION": UV_VERSION,
+        "GSD_VERSION": GSD_VERSION,
     }
     run_docker_build(
         "agent-sandbox-claude:local", SCRIPT_DIR / "agents" / "claude", build_args
@@ -73,6 +75,7 @@ Environment variables:
   GIT_DELTA_VERSION        git-delta version (default: {GIT_DELTA_VERSION})
   ZSH_IN_DOCKER_VERSION    zsh-in-docker version (default: {ZSH_IN_DOCKER_VERSION})
   CLAUDE_CODE_VERSION      Claude Code version (default: {CLAUDE_CODE_VERSION})
+  GSD_VERSION              GSD workflow framework version (default: {GSD_VERSION})
 """
     print(usage)
 

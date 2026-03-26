@@ -46,9 +46,11 @@ RUN apt-get update && \
 ENV LANG=en_US.UTF-8
 ENV LC_ALL=en_US.UTF-8
 
-# Set up non-root user
+# Set up non-root user — UID/GID defaults to 1000 (standard Linux first user)
 ARG USERNAME=dev
-RUN groupadd --system --gid 500 ${USERNAME} && useradd --system --create-home --uid 500 --gid 500 ${USERNAME}
+ARG USER_UID=1000
+ARG USER_GID=1000
+RUN groupadd --system --gid ${USER_GID} ${USERNAME} && useradd --system --create-home --uid ${USER_UID} --gid ${USER_GID} ${USERNAME}
 
 # Persist bash history
 RUN SNIPPET="export PROMPT_COMMAND='history -a' && export HISTFILE=/commandhistory/.bash_history" \

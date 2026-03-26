@@ -89,11 +89,20 @@ docker run --rm \
   --volume "mise-state:/v/mise" \
   --entrypoint bash \
   agent-sandbox-claude:local \
-  -c "if [ ! -f /v/mise/.initialized ]; then cp -a /home/dev/.mise/. /v/mise/ && touch /v/mise/.initialized; fi && mkdir -p /v/npm /v/pip /v/go /v/cargo/bin /v/localbin /v/hist && chown -R 500:500 /v/npm /v/pip /v/go /v/cargo /v/localbin /v/hist /v/mise"
+  -c "if [ ! -f /v/mise/.initialized ]; then cp -a /home/dev/.mise/. /v/mise/ && touch /v/mise/.initialized; fi && mkdir -p /v/npm /v/pip /v/go /v/cargo/bin /v/localbin /v/hist && chown -R 1000:1000 /v/npm /v/pip /v/go /v/cargo /v/localbin /v/hist /v/mise"
+
+# Resolve proxy container IP — compose DNS aliases aren't visible to standalone docker run
+PROXY_IP=$(docker inspect agent-sandbox-proxy --format json 2>/dev/null \
+  | python3 -c "import sys,json; nets=json.load(sys.stdin)[0]['NetworkSettings']['Networks']; print(next(v['IPAddress'] for k,v in nets.items() if 'internal' in k))" 2>/dev/null)
+if [ -z "$PROXY_IP" ]; then
+  echo "ERROR: proxy container not running. Start it with: mise run proxy:start"
+  exit 1
+fi
 
 docker run -d -i \
   --name "agent-sandbox-${NAME}" \
   --network agent-sandbox_sandbox-internal \
+  --add-host proxy:${PROXY_IP} \
   --cap-drop ALL \
   --cap-add SETUID \
   --cap-add SETGID \
@@ -101,7 +110,7 @@ docker run -d -i \
   --read-only \
   --tmpfs /tmp:size=268435456 \
   --tmpfs /run:size=67108864 \
-  --tmpfs /home/dev/.cache:size=67108864,uid=500,gid=500,exec \
+  --tmpfs /home/dev/.cache:size=67108864,uid=1000,gid=1000,exec \
   --cpus "${SANDBOX_CPUS:-2}" \
   --memory "${SANDBOX_MEMORY:-4g}" \
   --pids-limit "${SANDBOX_PIDS:-512}" \

@@ -1,41 +1,195 @@
-# GitHub — covers github.com and all subdomains
-# (replaces policy.json "services: github" which resolved IPs via GitHub /meta API)
-.github.com
-.githubusercontent.com
+# =============================================================================
+# Agent Sandbox Allowlist
+# =============================================================================
+# One domain per line. Leading dot matches domain + all subdomains.
+# Edit this file and restart proxy: mise run proxy:stop && mise run proxy:start
+# =============================================================================
 
-# Anthropic / Claude Code
-.api.anthropic.com
+# -----------------------------------------------------------------------------
+# AI / LLM Services
+# -----------------------------------------------------------------------------
+.anthropic.com
 .claude.ai
 .platform.claude.com
-.statsig.anthropic.com
 .statsig.com
-
-# Error tracking
 .sentry.io
+.openai.com
 
-# Package registries
+# -----------------------------------------------------------------------------
+# Code Hosting & Collaboration
+# -----------------------------------------------------------------------------
+.github.com
+.githubusercontent.com
+.githubassets.com
+.github.io
+.gitlab.com
+.gitlab.io
+.bitbucket.org
+.bitbucket.io
+.sr.ht
+.codeberg.org
+
+# -----------------------------------------------------------------------------
+# Package Registries & Language Ecosystems
+# -----------------------------------------------------------------------------
+
+# Python
 .pypi.org
-.files.pythonhosted.org
+.pythonhosted.org
 
-# mise version resolution
-.mise-versions.jdx.dev
-
-# npm registry
+# Node / npm / Bun
 .npmjs.org
 .npmjs.com
-
-# cargo / crates.io
-.crates.io
-.static.crates.io
-.index.crates.io
-
-# Go modules
-.proxy.golang.org
-.sum.golang.org
-.storage.googleapis.com
-
-# mise runtime downloads
-.nodejs.org
-.static.rust-lang.org
+.yarnpkg.com
+.unpkg.com
+.esm.sh
+.jsdelivr.net
 .bun.sh
-.dl.google.com
+
+# Rust / Cargo
+.crates.io
+.docs.rs
+
+# Go
+.golang.org
+.go.dev
+
+# Ruby
+.rubygems.org
+
+# Java / JVM
+.repo.maven.apache.org
+.repo1.maven.org
+.central.sonatype.com
+.plugins.gradle.org
+.services.gradle.org
+
+# .NET / NuGet
+.nuget.org
+
+# PHP
+.packagist.org
+.getcomposer.org
+
+# Homebrew (for reference docs)
+.formulae.brew.sh
+
+# Container registries
+.hub.docker.com
+.docker.io
+.production.cloudflare.docker.com
+.ghcr.io
+
+# -----------------------------------------------------------------------------
+# Documentation & Reference
+# -----------------------------------------------------------------------------
+.devdocs.io
+.developer.mozilla.org
+.mdn.io
+.docs.python.org
+.docs.djangoproject.com
+.flask.palletsprojects.com
+.fastapi.tiangolo.com
+.nodejs.org
+.react.dev
+.nextjs.org
+.vuejs.org
+.svelte.dev
+.angular.dev
+.doc.rust-lang.org
+.typescriptlang.org
+.kotlinlang.org
+.docs.oracle.com
+.learn.microsoft.com
+
+# -----------------------------------------------------------------------------
+# Stack Overflow & Programming Q&A
+# -----------------------------------------------------------------------------
+.stackoverflow.com
+.stackexchange.com
+.serverfault.com
+.superuser.com
+.askubuntu.com
+
+# -----------------------------------------------------------------------------
+# Search & Research
+# -----------------------------------------------------------------------------
+.google.com
+.googleapis.com
+.bing.com
+.duckduckgo.com
+.searxng.sludgepool.lan
+.wikipedia.org
+.wikimedia.org
+
+# -----------------------------------------------------------------------------
+# Cloud Provider Docs & APIs
+# -----------------------------------------------------------------------------
+.amazon.com
+.amazonaws.com
+.azure.microsoft.com
+.vercel.com
+.netlify.com
+.fly.io
+.render.com
+.railway.app
+.supabase.com
+.supabase.co
+.firebaseio.com
+
+# -----------------------------------------------------------------------------
+# Database & Data Store Docs
+# -----------------------------------------------------------------------------
+.postgresql.org
+.mysql.com
+.mongodb.com
+.redis.io
+.sqlite.org
+.elastic.co
+.clickhouse.com
+
+# -----------------------------------------------------------------------------
+# DevOps & Infrastructure
+# -----------------------------------------------------------------------------
+.terraform.io
+.releases.hashicorp.com
+.ansible.com
+.kubernetes.io
+.helm.sh
+.prometheus.io
+.grafana.com
+
+# -----------------------------------------------------------------------------
+# CDNs & Common Infrastructure
+# -----------------------------------------------------------------------------
+.cloudflare.com
+.fastly.net
+.akamaized.net
+.cloudfront.net
+
+# -----------------------------------------------------------------------------
+# Misc Developer Tools & Services
+# -----------------------------------------------------------------------------
+.postman.com
+.swagger.io
+.json-schema.org
+.regex101.com
+.jsonplaceholder.typicode.com
+.httpbin.org
+.ifconfig.me
+.icanhazip.com
+
+# -----------------------------------------------------------------------------
+# mise (runtime version management)
+# -----------------------------------------------------------------------------
+.mise-versions.jdx.dev
+.mise.jdx.dev
+.static.rust-lang.org
+
+# -----------------------------------------------------------------------------
+# Academic & Standards
+# -----------------------------------------------------------------------------
+.arxiv.org
+.ietf.org
+.w3.org
+.ecma-international.org

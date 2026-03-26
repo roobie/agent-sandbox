@@ -78,11 +78,24 @@ RUN git config --global http.proxy http://proxy:3128
 
 USER root
 
+# Trust all directories in system gitconfig — container is ephemeral and agent
+# only has /workspace. Written as root since /etc/gitconfig is on read-only rootfs.
+RUN git config --system --add safe.directory '*'
+
 # cargo proxy — /etc/cargo/config.toml avoids cargo-state:/home/dev/.cargo volume shadowing
 # cargo reads /etc/cargo/config.toml as a system-level config
 RUN mkdir -p /etc/cargo && \
     printf '[http]\nproxy = "http://proxy:3128"\n' \
     > /etc/cargo/config.toml
+
+# Install GSD (Get Shit Done) workflow framework for Claude Code
+# npm proxy config points at container-network proxy which isn't available at build time
+USER dev
+ARG GSD_VERSION=1.28.0
+RUN npm config set proxy null && npm config set https-proxy null && \
+    npx get-shit-done-cc@${GSD_VERSION} --claude --global && \
+    npm config set proxy http://proxy:3128 && npm config set https-proxy http://proxy:3128
+USER root
 
 # Activate mise in shell — puts all mise-managed tools on PATH automatically
 RUN echo 'eval "$(mise activate zsh)"' >> /home/dev/.zshrc && \
